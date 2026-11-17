@@ -3,6 +3,10 @@
 Áp dụng cho mọi component chuyển từ `.uel` (custom component Tekla 18.0) sang plugin C#, từ `RAKER+T_GIRDER` trở về sau.
 Người và Claude đều làm theo file này. Cách dùng lệnh xem [README.md](README.md).
 Trao đổi với người dùng bằng **tiếng Việt**.
+Người dùng mô tả yêu cầu theo [MAU_YEU_CAU.md](MAU_YEU_CAU.md): từ vựng hướng/trục, mẫu sửa, mẫu component mới, JSON hình dạng chuẩn.
+Khi có file JSON hình dạng chuẩn thì coi đó là chuẩn: dựng theo đúng file đó, chỗ nào khác bản gốc thì ghi vào mục "Giả định".
+Khi người dùng nói tên model: đọc trực tiếp model qua API (chỉ đọc) để đo, không đoán.
+File `_Dev\Export\*.json` (nút "Xuat JSON component" của EXE) chứa đủ dữ liệu một component: inputs, frames, geometry, attributes + presets + .inp, children kèm khối đặc. Định dạng mô tả ở đầu `_Tester\ComponentExport.cs`. Tekla mở nhiều cửa sổ thì đặt `SESSIONNAME` theo pipe (xem `_Tester\Program.cs`).
 
 ## 1. Điều cấm
 

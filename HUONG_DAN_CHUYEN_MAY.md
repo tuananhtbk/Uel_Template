@@ -1,6 +1,12 @@
 # Hướng dẫn chuyển thư viện UEL sang máy khác
 
 Thư mục này là **thư viện custom component của Tekla Structures**, gồm 76 file `.uel`, 35 bảng tra `.txt`/`.dat` và 7 file `.xls`.
+
+Bố cục (sắp xếp lại ngày 17/11/2026, nội dung từng file không đổi):
+- `File goc\<thư mục con>\`: 16 thư mục con của thư viện gốc, gồm 47 `.uel` kèm bảng tra.
+- `UEL\`: 29 `.uel` lẻ, kèm vài bảng tra.
+
+Các đường dẫn trong tài liệu này viết theo bố cục mới. Riêng `_PHAN_TICH\` vẫn ghi theo bố cục cũ, ví dụ `JP11\…` thì nay là `File goc\JP11\…`.
 Tài liệu này nói cách mang thư mục sang máy khác mà không làm hỏng component, đồng thời tóm tắt những gì đã phân tích được, để làm tiếp việc viết plugin.
 
 Mọi thông tin dưới đây được rút ra khi phân tích ngày 16/11/2026, trên máy gốc đang chạy Tekla 18.0.
@@ -9,7 +15,7 @@ Mọi thông tin dưới đây được rút ra khi phân tích ngày 16/11/2026
 
 ## 1. Nguyên tắc khi sao chép
 
-1. **Chép nguyên cả thư mục `UEL`**, giữ đúng cấu trúc thư mục con. Bảng tra phải đi cùng component gọi tới nó.
+1. **Chép nguyên cả thư mục `UEL Template`** (gồm `File goc\` và `UEL\`), giữ đúng cấu trúc thư mục con. Bảng tra phải đi cùng component gọi tới nó.
 2. **Không đổi tên các file `.txt`/`.dat`.** Component gọi bảng tra bằng **tên file chính xác**, ví dụ `fVF("YGY-S_COL2GIR-운용층.txt", P15, 2)`. Chỉ cần đổi tên, xoá dấu hay bỏ chữ Hàn là component sẽ không tìm thấy bảng.
 3. **Không mở rồi lưu lại bảng tra bằng trình soạn thảo đổi encoding**, chẳng hạn Notepad lưu thành UTF-8 hay VS Code. Các file này dùng **cp949 (EUC-KR)**, phân cách bằng **TAB** và xuống dòng **CRLF**. Nếu cần sửa, hãy dùng Excel rồi lưu dạng *Text (Tab delimited)*, hoặc dùng Notepad++ và giữ nguyên encoding ANSI/EUC-KR.
 4. **Khi nén:** dùng **7-Zip hoặc WinRAR** để tên file chữ Hàn (`운용층`) và chữ Trung (`副本`) giữ đúng. Chức năng "Send to → Compressed folder" của Windows có thể làm hỏng tên các file này trên máy không dùng locale Hàn. Có thể chép trực tiếp qua USB hoặc mạng thay vì nén.
@@ -38,21 +44,21 @@ Danh sách dưới đây là kết quả của lệnh `python _tools/uel_tool.py
 
 | Tên component | File |
 |---|---|
-| `0-DM-PIN MOMENT-V2` | `B-TO-TG/PIN-MOMENT.uel` = `PIN-MOMENT/0-DM-PIN-MOMENT-V2.uel` |
-| `0-RAKER+TG` | `RAKER+TG.uel` = `RAKER+T_GIRDER.uel` |
-| `0-RING PL` | `RING PLATE.uel` = `RING-PL.uel` |
-| `0-DM-T_BAR+SF` | `T_BAR SF.uel` = `T_BAR+SF.uel` |
+| `0-DM-PIN MOMENT-V2` | `File goc/B-TO-TG/PIN-MOMENT.uel` = `File goc/PIN-MOMENT/0-DM-PIN-MOMENT-V2.uel` |
+| `0-RAKER+TG` | `UEL/RAKER+TG.uel` = `UEL/RAKER+T_GIRDER.uel` |
+| `0-RING PL` | `UEL/RING PLATE.uel` = `UEL/RING-PL.uel` |
+| `0-DM-T_BAR+SF` | `UEL/T_BAR SF.uel` = `UEL/T_BAR+SF.uel` |
 
 **Khác nhau** (phải chọn một bản, hoặc đổi tên component trong Tekla trước khi nhập bản kia):
 
 | Tên component | Các bản | Khác ở đâu |
 |---|---|---|
-| `0-DM_S-Col2Gir_TANG_DUONG` | `COL-GIRDER-P-BOX/…TANG_DUONG.uel` · `PCOL/S-COL2GIR-TANG DUONG.uel` | Hộp thoại khác nhau (31 và 30 tham số) |
-| `♥♥♥YGY_HAUNCH_Moment` | `COL-HUN-PBOX/YGY-HAUNCH_Moment.uel` · `HAUNCH/YGY HAUNCH.uel` | Bản COL-HUN có thêm tham số `FB-GWP FREFIX` |
-| `♥♥♥YGY_TempBeam-Moment` | `PIN-MOMENT CHANGSIN/…` = `PINMOMENT CHANGSIN/…` · `YGY MOMENT/YGY.uel` | Bản `YGY MOMENT` có mô hình lớn hơn |
-| `0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)` | `DM-HAU.uel` · `HAUNCH/HAUCH.uel` | Mô hình hơi khác nhau |
-| `♥YGY_BK-SAME` | `BKKKKKKKKK SAME.uel` · `YGY/BK-SAME.uel` | Mô hình khác nhau |
-| `★YGY_꺽보-R1` | `YGY-R1.uel` · `YGY/SUNG YGY.uel` | Mô hình khác nhau |
+| `0-DM_S-Col2Gir_TANG_DUONG` | `File goc/COL-GIRDER-P-BOX/…TANG_DUONG.uel` · `File goc/PCOL/S-COL2GIR-TANG DUONG.uel` | Hộp thoại khác nhau (31 và 30 tham số) |
+| `♥♥♥YGY_HAUNCH_Moment` | `File goc/COL-HUN-PBOX/YGY-HAUNCH_Moment.uel` · `File goc/HAUNCH/YGY HAUNCH.uel` | Bản COL-HUN có thêm tham số `FB-GWP FREFIX` |
+| `♥♥♥YGY_TempBeam-Moment` | `File goc/PIN-MOMENT CHANGSIN/YGY_TEMPBEAM-MOMENT.uel` = `File goc/PINMOMENT CHANGSIN/PIN MOMENT CHANGSIN.uel` · `File goc/YGY MOMENT/YGY.uel` | Bản `YGY MOMENT` có mô hình lớn hơn |
+| `0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)` | `UEL/DM-HAU.uel` · `File goc/HAUNCH/HAUCH.uel` | Mô hình hơi khác nhau |
+| `♥YGY_BK-SAME` | `UEL/BKKKKKKKKK SAME.uel` · `File goc/YGY/BK-SAME.uel` | Mô hình khác nhau |
+| `★YGY_꺽보-R1` | `UEL/YGY-R1.uel` · `File goc/YGY/SUNG YGY.uel` | Mô hình khác nhau |
 
 Ngoài ra có các file bảng tra trùng nhau từng byte: `P-BOX TO GIRDER.xls` (2 bản), `INNOX-BEAM.dat` = `INNOX-BEAM-DOUBLE.dat`, `BEAM-2.txt` = `副本BEAM-2.txt`, và các file `YGY-TB-MOMENT-PLTHK/WELD-K.txt` trong 3 thư mục.
 
@@ -62,14 +68,14 @@ Kết quả của lệnh `python _tools/uel_tool.py missing .` Các bảng này 
 
 | Bảng tra thiếu | Component cần nó |
 |---|---|
-| `CT-BAR-H_COLUMN.txt` | `H-COL-T_BAR.uel` |
-| `Shear-JP11-SS275.dat` | `JP11/01-SHEAR-JP11(DM).uel` (lưu ý: file `Shear-JP11-SM355.dat` ở thư mục gốc lại ghi mác SS275 bên trong, có thể đã bị đổi tên nhầm) |
-| `DM-1F-RING+WING.txt` | `RING PLATE.uel`, `RING-PL.uel` |
-| `YGY-HAUNCH_Moment-미운용층.txt` | `YGY-HAUNCH-MOMENT-TANG AM.uel` |
+| `CT-BAR-H_COLUMN.txt` | `UEL/H-COL-T_BAR.uel` |
+| `Shear-JP11-SS275.dat` | `File goc/JP11/01-SHEAR-JP11(DM).uel` (lưu ý: file `UEL/Shear-JP11-SM355.dat` lại ghi mác SS275 bên trong, có thể đã bị đổi tên nhầm; `File goc/JP11/` cũng có một bản `Shear-JP11-SM355.dat`) |
+| `DM-1F-RING+WING.txt` | `UEL/RING PLATE.uel`, `UEL/RING-PL.uel` |
+| `YGY-HAUNCH_Moment-미운용층.txt` | `UEL/YGY-HAUNCH-MOMENT-TANG AM.uel` |
 
 ## 6. Công cụ đi kèm: `_tools/uel_tool.py`
 
-Script Python dùng để đọc file `.uel` mà không cần mở Tekla. Chạy từ thư mục `UEL`:
+Script Python dùng để đọc file `.uel` mà không cần mở Tekla. Chạy từ thư mục `UEL Template`; `.` nghĩa là quét cả `File goc\` lẫn `UEL\`:
 
 ```bash
 python _tools/uel_tool.py info .
@@ -81,10 +87,10 @@ python _tools/uel_tool.py dups .
 python _tools/uel_tool.py missing .
 ```
 ```bash
-python _tools/uel_tool.py formulas "COL TO GIRDER/0-DM-S-COL TO GIR.uel"
+python _tools/uel_tool.py formulas "File goc/COL TO GIRDER/0-DM-S-COL TO GIR.uel"
 ```
 ```bash
-python _tools/uel_tool.py unpack "0-PL WELD.uel" out_plweld
+python _tools/uel_tool.py unpack "UEL/0-PL WELD.uel" out_plweld
 ```
 
 - `info`: liệt kê từng component với tên bên trong, loại, các tab, các tham số và các bảng tra mà nó gọi.
@@ -125,7 +131,7 @@ Bố cục nhị phân đã giải mã và cách chạy lại công cụ: xem `_
 **Hướng làm plugin đã thống nhất:**
 - Làm thử trước với `0-PL WELD`: là detail, có 11 tham số, công thức đơn giản như `P7*tan(P5)` hay `if(P6==1) then P2-P4 else P3 endif`.
 - Bạn chụp lại danh sách chi tiết, đường cắt và cửa sổ Variables trong Custom Component Editor.
-- Sau đó dựng project C# (.NET 4.0) ở một thư mục mới cạnh `UEL`, và giữ nguyên `UEL` làm tài liệu gốc.
+- Sau đó dựng project C# (.NET 4.0) trong thư mục `Plugin\`, và giữ nguyên `File goc\` cùng `UEL\` làm tài liệu gốc.
 - Thứ tự làm: nhóm dễ (`CUTTING`, `PL+FILLER`, `AIR HOLE`, `STUD*`), rồi nhóm trung bình (`BK-*`, `T_BAR+SF`, `JP11`), cuối cùng nhóm khó (`COL TO GIRDER`/`P-BOX`, `HAUNCH`, `PIN-MOMENT`, `RING PL`, `WALE+T_GIRDER`, `YGY-R1`, `NEC_AUTO_SF`).
 
 ## 8. Plugin đã viết

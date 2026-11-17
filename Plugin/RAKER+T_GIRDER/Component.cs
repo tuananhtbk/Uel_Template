@@ -21,6 +21,8 @@ namespace UEL.Core.Components.RakerTG
             RakerTGParams p = (RakerTGParams)prm;
             // Như bản RakerTG cũ: không nhập FB Mat. thì lấy theo vật liệu bản đế
             if (values != null && !values.Contains("P5")) p.FlatBarMat = p.BasePlateMat;
+            // P24 để trống -> bản mã tự đặt phía trong góc primary/secondary; có nhập P24 -> theo P24
+            if (values != null && values.Contains("P24")) p.GussetSideAuto = false;
             p.BoltQtyX = Math.Max(1, p.BoltQtyX);
             p.BoltQtyY = Math.Max(1, p.BoltQtyY);
             if (p.ConnType == 1)

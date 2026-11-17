@@ -8,7 +8,7 @@
 
 | Component (thư mục = DLL = tên trong Tekla) | Từ file gốc | Ghi chú |
 |---|---|---|
-| `RAKER+T_GIRDER` | `RAKER+T_GIRDER.uel` (tên cũ trong catalog: `0-RAKER+TG`) | Xem [RAKER+T_GIRDER/README.md](RAKER+T_GIRDER/README.md) |
+| `RAKER+T_GIRDER` | `UEL\RAKER+T_GIRDER.uel` (tên cũ trong catalog: `0-RAKER+TG`) | Xem [RAKER+T_GIRDER/README.md](RAKER+T_GIRDER/README.md) |
 
 ## 1. Cấu trúc thư mục
 
@@ -84,13 +84,55 @@ Mở lại Tekla. Component `RAKER+T_GIRDER_DEV` sẽ có trong Component catalo
    ```
 3. Thử theo một trong hai cách:
    - **Trên component thật:** chọn component `…_DEV` trong model, mở hộp thoại rồi bấm **Modify**.
-   - **Bằng EXE:** mở `_Dev\UEL_TESTER.exe`, chọn component, chọn cấu kiện rồi dựng.
+   - **Bằng EXE:** mở `_Dev\UEL_TESTER.exe`, chọn component, nhập thông số, chọn cấu kiện rồi dựng.
+     - Tab **"Hop thoai"** được vẽ từ chính phần `.inp` trong `Plugin.cs`, đọc từ `<Ten>_DEV.dll`, nên có đúng tab, nhãn và vị trí ô như hộp thoại trong Tekla.
+       - Ô **để trống** thì dùng giá trị mặc định, hiện bằng chữ xám, giống Tekla.
+       - Khi dựng, các ô đã nhập được đưa qua `Apply` và `AfterApply` y như bản DLL.
+       - Ô **vàng** là tên biến không có `[UelParam]` trong `Params.cs`. Log ghi thêm các biến có trong Params nhưng không có trong hộp thoại.
+       - Sửa `Plugin.cs` xong thì chạy `build.bat dev <Ten>`. EXE tự vẽ lại hộp thoại và giữ các ô đang nhập.
+       - Chưa có ảnh minh hoạ (chỉ có khung), nút chọn catalog (profile, material, bolt) và lưu/nạp bộ thuộc tính.
+     - Tab **"Bang thong so"** chứa mọi thông số, kể cả các giá trị "Gia dinh" không có trong hộp thoại. Giá trị ở đây là mặc định cho các ô để trống.
      - EXE tự nhận ra bản Tekla đang mở và nạp Core của đúng bộ (`_Dev\18.0` hoặc `_Dev\2020+`).
+     - **Mở nhiều Tekla cùng lúc:** EXE hiện danh sách model để bạn chọn nối vào. Muốn đổi sang Tekla khác thì đóng EXE rồi mở lại.
+       - API Tekla nối qua pipe `Tekla.Structures.Model-<SESSIONNAME>:<bản>`. Từ cửa sổ Tekla thứ hai trở đi, pipe có thêm `-<pid>`.
+       - EXE tự đặt `SESSIONNAME` cho đúng, nên nối được cả khi được mở từ nơi không có biến này, ví dụ terminal của ứng dụng khác.
      - Muốn ép một bản cụ thể thì chạy `UEL_TESTER.exe 2025`.
      - Sau khi build lại Core, chỉ cần bấm **"2. Dung lai"**.
      - Đối tượng EXE tạo ra là đối tượng rời. Dọn bằng nút **"Xoa ket qua vua dung"**.
 
 Log nằm ở `%TEMP%\UEL_PLUGINS.log`. Dòng đầu của mỗi lần chạy ghi `Core <thời điểm build>`, nhờ đó biết đang chạy bản code nào.
+
+### Xuất component ra JSON (dữ liệu để viết plugin)
+Nút **"Xuat JSON component"** trên `UEL_TESTER.exe`. Nút này **chỉ đọc** model, không sửa gì.
+
+**Cách dùng:**
+1. Chọn component trong Tekla. Chọn được nhiều cái cùng lúc: bấm vào ký hiệu component, hoặc bấm vào một part do component tạo ra.
+2. Bấm nút. Nếu chưa chọn gì, EXE sẽ hỏi chọn.
+3. Mỗi component ra một file `_Dev\Export\<thời điểm>_<tên>_<id>.json`. Mở nhanh thư mục bằng nút **"Mo thu muc JSON"**.
+
+Xuất được mọi loại:
+- plugin, custom component, component hệ thống;
+- dạng connection, detail, seam và dạng part (Component có input là điểm hoặc cấu kiện).
+
+**Nội dung file:**
+
+| Mục | Nội dung |
+|---|---|
+| `component` | loại, số hiệu, tên, mọi thuộc tính của component (Class, UpVector, PositionType…) |
+| `inputs`, `input_parts` | cấu kiện và điểm đã chọn: primary, secondary, điểm tham chiếu detail, điểm đầu–cuối seam, input của Component. Kèm các đường cắt trên cấu kiện đầu vào, có đánh dấu cái nào do chính component này tạo |
+| `frames`, `geometry` | hệ toạ độ primary/secondary; độ dốc, góc mặt bằng của từng trục; góc và khoảng cách giữa primary với từng secondary. Hữu ích cho cấu kiện nghiêng, chéo |
+| `attributes` | giá trị các biến người dùng đã nhập, kèm nhãn và kiểu lấy từ `.inp`; các biến để trống (dùng mặc định); biến tính toán dò được (P1…P300); file `.uel` gốc; các preset; nguyên văn `.inp` |
+| `children` | mọi đối tượng con, đệ quy cả component con. Gồm: part (thuộc tính, điểm định nghĩa, contour và vát góc, trục, **khối đặc đầy đủ các mặt**, khối bao theo primary/secondary, đường cắt trên part), bu lông (khoảng cách, vị trí), mối hàn, part cắt (hình dạng khối cắt), fitting, cut plane, điểm điều khiển |
+
+Tên biến lấy theo thứ tự:
+1. `<model>\CustomComponentDialogFiles\<tên>.inp`;
+2. DLL plugin của bộ này;
+3. file `.uel` trong `UEL Template` và `<model>\UEL`;
+4. DLL plugin khác trong thư mục plugins của Tekla (chỉ đọc metadata, không chạy code của plugin).
+
+**Lưu ý:** Tekla chỉ lưu những biến **có nhập** trong hộp thoại. Ô để trống thì component dùng giá trị mặc định trong định nghĩa của nó, và API không đọc được giá trị này. Muốn có đủ giá trị, hãy nạp một preset (hoặc nhập tay) rồi Modify trước khi xuất; hoặc gửi kèm file `.uel` gốc để giải mã giá trị mặc định.
+
+Đã thử 17/11/2026 trên model `SAMPLE V2020` (Tekla 2020) với connection hệ thống, connection custom, detail custom, detail hệ thống và component dạng part: mỗi file 40–240 KB, dưới 1,5 giây. Riêng dạng seam và plugin thì model chưa có để thử.
 
 ### So sánh với component gốc
 Nút **"So sanh: component goc vs plugin"** trên `UEL_TESTER.exe` cho biết plugin có dựng giống component `.uel` gốc hay không.
@@ -163,6 +205,7 @@ Lệnh này tạo `_Dist\UEL_<ngày>\`, gồm `18.0\`, `2020+\`, `install.bat`, 
 ## 5. Thêm một component mới
 
 Quy tắc đầy đủ (điều cấm, quy trình, quy ước code, checklist) nằm ở [CLAUDE.md](CLAUDE.md). Dưới đây là tóm tắt.
+Mẫu để mô tả yêu cầu (component mới, sửa component, hình dạng chuẩn dạng JSON) nằm ở [MAU_YEU_CAU.md](MAU_YEU_CAU.md).
 
 1. Chép thư mục `_Template` thành `Plugin\<tên file .uel gốc>`, ví dụ `Plugin\0-PL WELD`.
 2. Trong 4 file, đổi `Xxx` thành tên ngắn của component, ví dụ `PlWeld`.
@@ -208,7 +251,7 @@ Thư mục cài (`_Tools\tekla.ps1` tự tìm):
 
 Nếu Tekla cài ở chỗ khác, đặt biến `TEKLA_ROOT_<bản>`, ví dụ `TEKLA_ROOT_2025.0=D:\Tekla\2025.0`.
 
-**Chưa kiểm tra, phải thử thật trong Tekla:** bản DEV chạy bên trong Tekla, hành vi Modify, EXE trên model thật (cả nút So sánh), hộp thoại `.inp` trên Tekla 2025.
+**Chưa kiểm tra, phải thử thật trong Tekla:** bản DEV chạy bên trong Tekla, hành vi Modify, EXE trên model thật (cả nút So sánh và việc dựng từ tab Hop thoai), hộp thoại `.inp` trên Tekla 2025.
 
 ## 7. Nguồn gốc
 

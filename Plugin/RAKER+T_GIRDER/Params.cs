@@ -16,7 +16,7 @@ namespace UEL.Core.Components.RakerTG
 
             ConnType = 0;
             GussetThk = 30; GussetMat = "SM355"; GussetMark = "B1D-RGP"; GussetClass = 4;               // class: giả định
-            GussetOnPositiveSide = true;
+            GussetOnPositiveSide = true; GussetSideAuto = true;
             BoltToWebEnd = 230; BoltQtyX = 1; BoltDistX = 90;                                           // BoltDistX: giả định
             BoltQtyY = 2; BoltDistY = 130; BoltEdgeX = 60; BoltEdgeY = 40; WebGap = 15;
             BoltSize = 24; BoltStandard = "T.S.B"; Tolerance = 3; SlotX = 0; SlotY = 0;
@@ -45,6 +45,9 @@ namespace UEL.Core.Components.RakerTG
         [UelParam("P21"), Category("2. Gusset"), DisplayName("P21 Mark")] public string GussetMark { get; set; }
         [UelParam("P23"), Category("2. Gusset"), DisplayName("P23 Class")] public int GussetClass { get; set; }
         [UelParam("P24"), Category("2. Gusset"), DisplayName("P24 Guss. L or R (true = 1)")] public bool GussetOnPositiveSide { get; set; }
+        /// Mặc định (17/11/2026, theo hướng lắp raker): bản mã đặt PHÍA TRONG góc giữa primary và secondary.
+        /// Tắt khi người dùng nhập P24 trong hộp thoại (xem RakerTGComponent.AfterApply) -> theo P24.
+        [Category("2. Gusset"), DisplayName("Ban ma phia trong (tu dong khi P24 de trong)")] public bool GussetSideAuto { get; set; }
         [UelParam("P46"), Category("2. Gusset"), DisplayName("P46 Gap Web beam to base pl")] public double WebGap { get; set; }
 
         // ---------------- Bolts
@@ -82,7 +85,7 @@ namespace UEL.Core.Components.RakerTG
             return string.Format(System.Globalization.CultureInfo.InvariantCulture,
                 "BP PL{0} {1} cls={2} mark={3} gaps T{4}/B{5}/L{6}/R{7} | GP PL{8} {9} cls={10} side={11} | bolts {12}x{13} M{14} {15} | FB={16} cls={17} | P13={18}",
                 BasePlateThk, BasePlateMat, BasePlateClass, BasePlateMark, TopGap, BottGap, LeftGap, RightGap,
-                GussetThk, GussetMat, GussetClass, GussetOnPositiveSide ? 1 : 0,
+                GussetThk, GussetMat, GussetClass, GussetSideAuto ? "tu dong (phia trong)" : (GussetOnPositiveSide ? "1" : "0"),
                 BoltQtyX, BoltQtyY, BoltSize, BoltStandard, FlatBar ? 1 : 0, FlatBarClass, ConnType);
         }
     }

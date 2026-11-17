@@ -2,10 +2,14 @@
 
 - Người dùng trao đổi bằng **tiếng Việt**. Hãy trả lời bằng tiếng Việt.
 - Thư mục này chứa 76 file `.uel` (custom component Tekla, nén gzip, chữ Hàn mã hoá cp949) cùng các bảng tra `.txt`/`.dat` (cp949, phân cách TAB, xuống dòng CRLF) mà component gọi qua `fVF("tên file", ...)`.
+- Bố cục (người dùng sắp xếp lại 17/11/2026):
+  - `File goc\<thư mục cũ>\` có 16 thư mục con: 47 `.uel`, kèm bảng tra và `.xls`.
+  - `UEL\` có 29 `.uel` (vd. `UEL\RAKER+T_GIRDER.uel`, `UEL\0-PL WELD.uel`), kèm 1 `.txt`, 1 `.dat`, 2 `.xls`.
+  - Trong `_PHAN_TICH\` vẫn ghi đường dẫn cũ (`JP11\01-SHEAR-JP11(DM).uel`). Thư mục con cũ nay nằm trong `File goc\`; file không có thư mục con nay nằm trong `UEL\`.
 - Mục tiêu hiện tại: **viết lại các component thành plugin C# cho Tekla 18.0** (.NET Framework 4.0, dùng `ConnectionBase`/`PluginBase`). Làm thử trước với `0-PL WELD`.
 - Toàn bộ kết quả phân tích, các component trùng, các bảng tra thiếu và nguyên tắc chuyển máy nằm trong [HUONG_DAN_CHUYEN_MAY.md](HUONG_DAN_CHUYEN_MAY.md). Hãy đọc file đó trước khi làm tiếp.
 - Công cụ đọc `.uel` có sẵn: `python -I _tools/uel_tool.py info|formulas|dups|missing|unpack ...`
-- Coi thư mục `UEL` là tài liệu gốc: không sửa, không đổi tên, không chuyển encoding các file `.uel`/`.txt`/`.dat`. Code plugin đặt trong thư mục con `Plugin\` (theo yêu cầu người dùng 17/11/2026), không đặt lẫn với các file `.uel`.
+- Coi `File goc\` và `UEL\` là tài liệu gốc: không sửa, không đổi tên, không chuyển encoding các file `.uel`/`.txt`/`.dat`. Code plugin đặt trong thư mục con `Plugin\` (theo yêu cầu người dùng 17/11/2026), không đặt lẫn với các file `.uel`.
 - `.uel_temp` đã giải mã **một phần** (xem `_PHAN_TICH/README.md`, chi tiết từng component ở `_PHAN_TICH/components/*.md`, công cụ `_PHAN_TICH/tools/uel_report.py`): đọc được công thức gắn với **từng biến P/D**, tên biến D (`D12.PLATE.BEAM`), thuộc tính gán cho part (`PROFILE`, `MATERIAL`, `CLASS`, `SERIE`, `CREATION`, bu lông…) và danh sách mặt phẳng được dùng. **Chưa** đọc được: biến D nào buộc vào mặt nào, toạ độ/hình học part. Phần này lấy từ Custom Component Editor của Tekla (người dùng chụp màn hình gửi lên), đừng đoán.
 - **Quy tắc làm component mới: [Plugin/CLAUDE.md](Plugin/CLAUDE.md)** (điều cấm, quy trình 14 bước, quy ước code, checklist trước khi báo xong). Bắt buộc đọc trước khi viết component.
 - **Khung plugin: [Plugin/](Plugin/README.md)** (xem README ở đó). Mỗi component một thư mục `Plugin\<tên file .uel gốc>\` (`Params.cs`, `Builder.cs`, `Component.cs`, `Plugin.cs`); tên thư mục = tên DLL = tên component trong Tekla, **không** thêm hậu tố "PLUGIN" (người dùng yêu cầu giữ tên cũ). Build tự nhận thư mục có `Plugin.cs`, không phải đăng ký; mẫu ở `Plugin\_Template`, code chung ở `Plugin\_Common`.

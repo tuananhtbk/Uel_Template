@@ -19,6 +19,12 @@ namespace UEL.Tester
     {
         private readonly ComboBox _combo = new ComboBox();
         private readonly PropertyGrid _grid = new PropertyGrid();
+        private readonly TabControl _views = new TabControl();
+        private readonly TabPage _dialogPage = new TabPage("Hop thoai");
+        private readonly TabPage _gridPage = new TabPage("Bang thong so (tat ca, ke ca gia dinh)");
+        private InpView _inp;            // hộp thoại vẽ từ .inp của component đang chọn
+        private string _inpKey;
+        private string _inpStamp;        // đường dẫn + thời điểm file DLL chứa .inp (đổi thì vẽ lại)
         private readonly TextBox _log = new TextBox();
         private readonly Label _status = new Label();
         private readonly Label _coreInfo = new Label();
@@ -36,7 +42,10 @@ namespace UEL.Tester
         public TesterForm()
         {
             Text = "UEL - thu nghiem component (Tekla " + Program.CoreTarget + ")";
-            Size = new Size(860, 760);
+            // 17/11/2026: người dùng muốn mặc định nhỏ bằng 1/4 (diện tích) cửa sổ cũ (1594x1032) -> ~800x520.
+            // Hộp thoại lớn thì cuộn trong tab; kéo giãn cửa sổ nếu cần.
+            Size = new Size(800, 520);
+            MinimumSize = new Size(500, 360);
             StartPosition = FormStartPosition.CenterScreen;
             TopMost = true;
             _logHandler = AppendLog;
@@ -57,7 +66,8 @@ namespace UEL.Tester
 
             FlowLayoutPanel buttons = new FlowLayoutPanel();
             buttons.Dock = DockStyle.Top;
-            buttons.Height = 72;
+            buttons.AutoSize = true;                            // cửa sổ hẹp -> thêm hàng nút, không bị che
+            buttons.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             buttons.Padding = new Padding(4);
             AddButton(buttons, "1. Chon cau kien va dung", OnPickAndBuild, 190);
             AddButton(buttons, "2. Dung lai (giu cau kien da chon)", OnRebuild, 220);
@@ -65,6 +75,8 @@ namespace UEL.Tester
             AddButton(buttons, "Tra ve mac dinh", OnReset, 120);
             AddButton(buttons, "Mo file log", OnOpenLog, 100);
             AddButton(buttons, "So sanh: component goc  vs  plugin", OnCompare, 240);
+            AddButton(buttons, "Xuat JSON component", OnExport, 150);
+            AddButton(buttons, "Mo thu muc JSON", OnOpenExport, 120);
 
             _status.Dock = DockStyle.Top;
             _status.Height = 22;
@@ -76,16 +88,22 @@ namespace UEL.Tester
 
             _grid.Dock = DockStyle.Fill;
             _grid.PropertySort = PropertySort.Categorized;
+            _grid.PropertyValueChanged += delegate { if (_inp != null) _inp.RefreshDefaults(_params); };
+            _gridPage.Controls.Add(_grid);
+            _views.Dock = DockStyle.Fill;
+            _views.TabPages.Add(_dialogPage);
+            _views.TabPages.Add(_gridPage);
+            _views.SelectedIndexChanged += delegate { if (_views.SelectedTab == _gridPage) _grid.Refresh(); };
 
             _log.Dock = DockStyle.Bottom;
-            _log.Height = 200;
+            _log.Height = 90;
             _log.Multiline = true;
             _log.ScrollBars = ScrollBars.Both;
             _log.WordWrap = false;
             _log.ReadOnly = true;
             _log.Font = new Font("Consolas", 9f);
 
-            Controls.Add(_grid);
+            Controls.Add(_views);
             Controls.Add(_log);
             Controls.Add(_coreInfo);
             Controls.Add(_status);
@@ -124,8 +142,16 @@ namespace UEL.Tester
 
         // ---------------------------------------------------------------- Core
 
-        /// Nạp (hoặc nạp lại nếu vừa build) mọi file *.Core.dll trong CoreDir. Giữ nguyên thông số đang nhập.
+        /// Nạp lại Core nếu vừa build, rồi vẽ lại hộp thoại nếu .inp vừa đổi (build.bat dev).
         private bool EnsureCore()
+        {
+            bool ok = EnsureCoreFiles();
+            if (ok) RefreshDialog();
+            return ok;
+        }
+
+        /// Nạp (hoặc nạp lại nếu vừa build) mọi file *.Core.dll trong CoreDir. Giữ nguyên thông số đang nhập.
+        private bool EnsureCoreFiles()
         {
             List<CoreHost> now = new List<CoreHost>();
             string[] files = Directory.Exists(CoreDir) ? Directory.GetFiles(CoreDir, "*.Core.dll") : new string[0];
@@ -207,6 +233,95 @@ namespace UEL.Tester
             _primary = null;
             _secondaries.Clear();
             AppendLog("Component: " + it);
+            RefreshDialog();
+        }
+
+        // ---------------------------------------------------------------- Hộp thoại (.inp)
+
+        /// File chứa .inp của component: bản DEV cùng thư mục Core, nếu không có thì bản phát hành.
+        private static string ShellDll(string key)
+        {
+            string dev = Path.Combine(CoreDir, key + "_DEV.dll");
+            if (File.Exists(dev)) return dev;
+            string pluginDir = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\'));
+            string rel = Path.Combine(Path.Combine(pluginDir, Program.CoreTarget), key + ".dll");
+            return File.Exists(rel) ? rel : null;
+        }
+
+        /// Lấy hằng UserInterface (.inp) trong lớp plugin. Hằng nằm sẵn trong metadata, không chạy code plugin.
+        private static string ReadUserInterface(string dll)
+        {
+            return PluginMeta.ReadUserInterfaceConst(dll);
+        }
+
+        private void RefreshDialog()
+        {
+            if (_key == null) return;
+            string dll = ShellDll(_key);
+            string stamp = dll == null ? null : dll + "|" + File.GetLastWriteTimeUtc(dll).Ticks;
+            if (_inp != null && _inpKey == _key && _inpStamp == stamp)
+            {
+                _inp.RefreshDefaults(_params);
+                return;
+            }
+
+            Dictionary<string, string> keep = _inp != null && _inpKey == _key ? _inp.Snapshot() : null;
+            string inp = null;
+            if (dll != null)
+            {
+                try { inp = ReadUserInterface(dll); }
+                catch (Exception ex) { AppendLog("Khong doc duoc hop thoai trong " + Path.GetFileName(dll) + ": " + ex.Message); }
+            }
+            _dialogPage.Controls.Clear();
+            if (_inp != null) _inp.Dispose();
+            _inp = null;
+            _inpKey = _key;
+            _inpStamp = stamp;
+
+            if (inp == null)
+            {
+                Label l = new Label();
+                l.AutoSize = true;
+                l.Location = new Point(10, 10);
+                l.Text = "Chua co hop thoai: can " + _key + "_DEV.dll trong " + CoreDir + "  ->  chay build.bat dev " + _key +
+                         "\nTam thoi dung tab 'Bang thong so'.";
+                _dialogPage.Controls.Add(l);
+                _dialogPage.Text = "Hop thoai (chua co)";
+                return;
+            }
+
+            _inp = new InpView(inp, _params, keep, AppendLog);
+            Label hint = new Label();
+            hint.Dock = DockStyle.Bottom;
+            hint.Height = 20;
+            hint.ForeColor = Color.DimGray;
+            hint.Text = "O de trong = gia tri mac dinh (chu xam, lay tu tab 'Bang thong so'), giong hop thoai Tekla. O vang: ten bien khong co trong Params.cs.";
+            _dialogPage.Controls.Add(_inp);
+            _dialogPage.Controls.Add(hint);
+            _dialogPage.Text = "Hop thoai (giong Tekla, tu " + Path.GetFileName(dll) + ")";
+            if (keep != null) AppendLog("Da ve lai hop thoai (Plugin.cs vua build lai), giu cac o dang nhap.");
+        }
+
+        /// Thông số đem dựng = bảng thông số + các ô đã nhập trong hộp thoại, qua Core.Apply (giống bản DLL).
+        private bool PrepareParams(out object prm)
+        {
+            prm = _core.NewParams(_key);
+            CopyProperties(_params, prm);
+            Hashtable values = new Hashtable();
+            if (_inp != null)
+            {
+                List<string> errors = new List<string>();
+                values = _inp.Collect(errors);
+                if (errors.Count > 0)
+                {
+                    foreach (string e in errors) AppendLog("Hop thoai: " + e);
+                    AppendLog("Sua cac o to do roi bam lai.");
+                    return false;
+                }
+            }
+            _core.Apply(_key, prm, values);
+            if (_inp != null) AppendLog("Hop thoai: " + values.Count + " o da nhap, cac o con lai dung gia tri mac dinh.");
+            return true;
         }
 
         // ---------------------------------------------------------------- Tekla
@@ -218,8 +333,8 @@ namespace UEL.Tester
                 if (_model == null) _model = new Model();
                 if (_model.GetConnectionStatus())
                 {
-                    _status.Text = "Da noi voi Tekla. Model: " + _model.GetInfo().ModelName +
-                                   "   |  API: " + Program.ApiDir + " (" + Program.ApiSource + ")";
+                    _status.Text = "Da noi voi Tekla. Model: " + _model.GetInfo().ModelName + "   |  " + Program.InstanceInfo +
+                                   "   |  API: " + Program.ApiDir;
                     _status.ForeColor = Color.DarkGreen;
                     return true;
                 }
@@ -228,7 +343,8 @@ namespace UEL.Tester
             {
                 AppendLog("Loi ket noi: " + ex.Message);
             }
-            _status.Text = "CHUA noi duoc Tekla - hay mo Tekla va mot model truoc. API dang dung: " + Program.ApiDir + " (" + Program.ApiSource + ")";
+            _status.Text = "CHUA noi duoc Tekla (" + Program.InstanceInfo + ", SESSIONNAME=" + Environment.GetEnvironmentVariable("SESSIONNAME") +
+                           "). Mo Tekla + model roi DONG va MO LAI EXE. API: " + Program.ApiDir + " (" + Program.ApiSource + ")";
             _status.ForeColor = Color.Red;
             return false;
         }
@@ -236,6 +352,8 @@ namespace UEL.Tester
         private void OnPickAndBuild(object sender, EventArgs e)
         {
             if (!EnsureCore() || !Connect()) return;
+            object prm;
+            if (!PrepareParams(out prm)) return;
             string[] d = _core.Describe(_key);
             List<ModelObject> secs = new List<ModelObject>();
             ModelObject prim;
@@ -258,7 +376,7 @@ namespace UEL.Tester
             }
             _primary = prim;
             _secondaries = secs;
-            Build();
+            Build(prm);
         }
 
         private void OnRebuild(object sender, EventArgs e)
@@ -269,19 +387,21 @@ namespace UEL.Tester
                 AppendLog("Chua chon cau kien - bam nut 1 truoc.");
                 return;
             }
+            object prm;
+            if (!PrepareParams(out prm)) return;
             DeleteLast();
             // đọc lại vì fitting/cut vừa bị xoá
             _primary.Select();
             foreach (ModelObject o in _secondaries) o.Select();
-            Build();
+            Build(prm);
         }
 
-        private void Build()
+        private void Build(object prm)
         {
             try
             {
                 ArrayList created = new ArrayList();
-                bool ok = _core.Build(_key, _params, _model, _primary, new ArrayList(_secondaries), created);
+                bool ok = _core.Build(_key, prm, _model, _primary, new ArrayList(_secondaries), created);
                 _last = created;
                 _model.CommitChanges();
                 AppendLog(ok ? "Xong: tao " + _last.Count + " doi tuong." : "Dung KHONG thanh cong (xem log o tren). Da tao " + _last.Count + " doi tuong.");
@@ -316,6 +436,11 @@ namespace UEL.Tester
             if (!EnsureCore() || _key == null) return;
             _params = _core.NewParams(_key);
             _grid.SelectedObject = _params;
+            if (_inp != null)
+            {
+                _inp.ClearAll();
+                _inp.RefreshDefaults(_params);
+            }
         }
 
         // ---------------------------------------------------------------- So sánh
@@ -347,6 +472,71 @@ namespace UEL.Tester
             {
                 AppendLog("Loi so sanh: " + ex);
             }
+        }
+
+        // ---------------------------------------------------------------- Xuất JSON
+
+        private static string ExportDir
+        {
+            get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Export"); }
+        }
+
+        /// Xuất component ra JSON (chỉ đọc model). Lấy các component đang chọn trong Tekla (chọn component, hoặc
+        /// chọn part do component tạo ra); không chọn gì thì hỏi chọn 1 cái.
+        private void OnExport(object sender, EventArgs e)
+        {
+            if (!Connect()) return;
+            List<BaseComponent> comps = new List<BaseComponent>();
+            Dictionary<int, bool> ids = new Dictionary<int, bool>();
+            try
+            {
+                ModelObjectEnumerator sel = new Tekla.Structures.Model.UI.ModelObjectSelector().GetSelectedObjects();
+                while (sel != null && sel.MoveNext())
+                {
+                    ModelObject o = sel.Current;
+                    if (o == null) continue;
+                    BaseComponent bc = o as BaseComponent;
+                    if (bc == null) { try { bc = o.GetFatherComponent(); } catch { bc = null; } }
+                    if (bc == null || ids.ContainsKey(bc.Identifier.ID)) continue;
+                    ids[bc.Identifier.ID] = true;
+                    bc.Select();
+                    comps.Add(bc);
+                }
+            }
+            catch (Exception ex) { AppendLog("Doc doi tuong dang chon loi: " + ex.Message); }
+
+            if (comps.Count == 0)
+            {
+                BaseComponent one = PickComponent(new Picker(), "Xuat JSON: chon 1 part (hoac ky hieu) cua component can xuat");
+                if (one == null) return;
+                comps.Add(one);
+            }
+
+            AppendLog("Xuat JSON " + comps.Count + " component ...");
+            Cursor = Cursors.WaitCursor;
+            try
+            {
+                foreach (BaseComponent bc in comps)
+                {
+                    try { ComponentExport.Run(_model, bc, ExportDir, AppendLog); }
+                    catch (Exception ex) { AppendLog("Loi xuat " + bc.Name + " (id " + bc.Identifier.ID + "): " + ex); }
+                    Application.DoEvents();
+                }
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+        }
+
+        private void OnOpenExport(object sender, EventArgs e)
+        {
+            try
+            {
+                Directory.CreateDirectory(ExportDir);
+                System.Diagnostics.Process.Start("explorer.exe", "\"" + ExportDir + "\"");
+            }
+            catch (Exception ex) { AppendLog(ex.Message); }
         }
 
         private BaseComponent PickComponent(Picker picker, string prompt)

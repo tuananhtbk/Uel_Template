@@ -2,6 +2,12 @@
 
 > Tạo tự động từ 76 file `.uel` + các file tra cứu `.txt/.dat/.xls`. Chi tiết từng component nằm trong `components/<thư mục>__<tên file>.uel.md`.
 > Công cụ giải mã ở `tools/` (Python 3, không cần thư viện ngoài): `python tools/uel_report.py "<thư mục UEL>" "<thư mục xuất>"`.
+>
+> **Đường dẫn trong thư mục này theo bố cục CŨ.** Từ 17/11/2026 file gốc được sắp xếp lại; nội dung từng file không đổi:
+> - `<thư mục con>\<file>.uel` (ví dụ `JP11\01-SHEAR-JP11(DM).uel`) nay nằm ở `File goc\<thư mục con>\<file>.uel`.
+> - file không có thư mục con (ví dụ `RAKER+T_GIRDER.uel`) nay nằm ở `UEL\<file>.uel`.
+>
+> Tên file `components/*.md` giữ nguyên.
 
 ## 1. Cấu trúc file `.uel` (đã giải mã)
 
