@@ -19,6 +19,11 @@ Get-ChildItem -LiteralPath $Root -Directory | Where-Object { -not $_.Name.Starts
   New-Item -ItemType Directory -Force $bmpOut | Out-Null
   Get-ChildItem -LiteralPath (Join-Path $_.FullName 'bitmaps') -File | Copy-Item -Destination $bmpOut
 }
+# bang tra mau <Ten>\<Ten>.txt -> <bo cai>\tables\ (install.ps1 chep vao thu muc plugin neu chua co)
+Get-ChildItem -LiteralPath $Root -Directory | Where-Object { -not $_.Name.StartsWith('_') -and (Test-Path -LiteralPath (Join-Path $_.FullName ($_.Name + '.txt'))) } | ForEach-Object {
+  New-Item -ItemType Directory -Force (Join-Path $out 'tables') | Out-Null
+  Copy-Item -LiteralPath (Join-Path $_.FullName ($_.Name + '.txt')) -Destination (Join-Path $out 'tables')
+}
 Copy-Item -LiteralPath (Join-Path $Root 'install.bat') -Destination $out
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'install.ps1'), (Join-Path $PSScriptRoot 'tekla.ps1') -Destination (Join-Path $out '_Tools')
 
@@ -31,6 +36,8 @@ Component: $names
   18.0\   DLL cho Tekla 18.0 va 2019
   2020+\  DLL cho Tekla 2020, 2021, 2025...
   bitmaps\  anh minh hoa hop thoai (install.bat tu chep vao thu muc anh cua Tekla)
+  tables\   bang tra mau <Ten>.txt (install.bat chep vao thu muc plugin neu chua co;
+            bang dung that nen dat o thu muc model, XS_PROJECT hoac XS_FIRM)
 
 1. Tat ban Tekla can cai.
 2. Chuot phai install.bat - Run as administrator (Tekla 2019 tro di nam trong Program Files),

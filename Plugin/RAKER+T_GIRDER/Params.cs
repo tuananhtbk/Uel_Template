@@ -11,21 +11,26 @@ namespace UEL.Core.Components.RakerTG
     {
         public RakerTGParams()
         {
-            BasePlateThk = 19; BasePlateMat = "SM355"; BasePlateClass = 3; BasePlateMark = "B1D-RSF";   // class: giả định
+            BasePlateThk = 19; BasePlateMat = "SM355"; BasePlateClass = 3; BasePlateMark = "RSF";       // class: giả định
+            // Mark (P4/P21/P11) chỉ là PHẦN ĐUÔI: prefix = phần trước chữ "M" của prefix Part 1 + Mark (Plugin\CLAUDE.md 4.3).
+            // KK350 lưu "B1D-RSF"/"B1D-RGP"/"B1D-RFB", #KRAC lưu "1RSF"/"1RGP"/"1RFB" -> phần đuôi chung là RSF/RGP/RFB.
             TopGap = 25; LeftGap = 25; BottGap = 25; RightGap = 25;
 
             ConnType = 0;
-            GussetThk = 30; GussetMat = "SM355"; GussetMark = "B1D-RGP"; GussetClass = 4;               // class: giả định
+            GussetThk = 30; GussetMat = "SM355"; GussetMark = "RGP"; GussetClass = 4;               // class: giả định
             GussetOnPositiveSide = true; GussetSideAuto = true;
             BoltToWebEnd = 230; BoltQtyX = 1; BoltDistX = 90;                                           // BoltDistX: giả định
             BoltQtyY = 2; BoltDistY = 130; BoltEdgeX = 60; BoltEdgeY = 40; WebGap = 15;
             BoltSize = 24; BoltStandard = "T.S.B"; Tolerance = 3; SlotX = 0; SlotY = 0;
 
-            FlatBar = true; FlatBarMark = "B1D-RFB"; FlatBarMat = "SM355"; FlatBarClass = 5;            // class: giả định
+            FlatBar = true; FlatBarMark = "RFB"; FlatBarMat = "SS275"; FlatBarClass = 5;            // class: giả định; SS275 = mặc định P5 của .uel
+            FlatBarProfile = "FB25*9";                                                                  // P55 mới (người dùng 17/11/2026)
+            GussetLength = 0;                                                                           // P54 mới: 0 = tự tính theo bu lông + eH
+            TablePath = ""; UseTable = true;                                                            // P56/P57 mới: bảng tra theo profile Part 2
             FlangeWeldGap = 7; WeldAngle = 35;                                                          // giả định
             TopScallop = true; BottScallop = true;
 
-            FlatBarThk = 9; FlatBarWidth = 25; FlatBarExtend = 15; ScallopRadius = 35; FilletSize = 6;                      // chuỗi "25*9" và D66 = P46+35 có trong .uel
+            FlatBarExtend = 15; ScallopRadius = 35; FilletSize = 6;                      // chuỗi "25*9" và D66 = P46+35 có trong .uel
         }
 
         // ---------------- Base Plate
@@ -38,6 +43,12 @@ namespace UEL.Core.Components.RakerTG
         [UelParam("P8"), Category("1. Base Plate"), DisplayName("P8  Bott. gap")] public double BottGap { get; set; }
         [UelParam("P19"), Category("1. Base Plate"), DisplayName("P19 Right gap")] public double RightGap { get; set; }
 
+        // ---------------- Bảng tra theo profile Part 2 (BIẾN MỚI, người dùng 17/11/2026; không có trong .uel gốc)
+        /// Đường dẫn bảng tra. Trống = "RAKER+T_GIRDER.txt"; chỉ tên file thì tìm ở thư mục model -> XS_PROJECT -> XS_FIRM -> thư mục plugin.
+        [UelParam("P56"), Category("0. Bang tra"), DisplayName("P56 Bang tra (file .txt)")] public string TablePath { get; set; }
+        /// Yes (mặc định) = cột nào có trong bảng thì lấy theo bảng, đè giá trị hộp thoại. No = chỉ dùng hộp thoại.
+        [UelParam("P57"), Category("0. Bang tra"), DisplayName("P57 Dung bang tra")] public bool UseTable { get; set; }
+
         // ---------------- Gusset
         [UelParam("P13"), Category("2. Gusset"), DisplayName("P13 Conn. Type (0 = ban ma + bu long)")] public int ConnType { get; set; }
         [UelParam("P20"), Category("2. Gusset"), DisplayName("P20 Gusset Thk.")] public double GussetThk { get; set; }
@@ -49,6 +60,9 @@ namespace UEL.Core.Components.RakerTG
         /// Tắt khi người dùng nhập P24 trong hộp thoại (xem RakerTGComponent.AfterApply) -> theo P24.
         [Category("2. Gusset"), DisplayName("Ban ma phia trong (tu dong khi P24 de trong)")] public bool GussetSideAuto { get; set; }
         [UelParam("P46"), Category("2. Gusset"), DisplayName("P46 Gap Web beam to base pl")] public double WebGap { get; set; }
+        /// BIẾN MỚI, không có trong .uel gốc (người dùng 17/11/2026): chiều dài cạnh dài bản mã (hình bình hành, đo dọc trục raker).
+        /// 0 hoặc để trống = tự tính như cũ (cột bu lông cuối + eH P44).
+        [UelParam("P54"), Category("2. Gusset"), DisplayName("P54 Gusset length (0 = auto)")] public double GussetLength { get; set; }
 
         // ---------------- Bolts
         [UelParam("P29"), Category("3. Bolt"), DisplayName("P29 Bolt To web Beam")] public double BoltToWebEnd { get; set; }
@@ -68,6 +82,8 @@ namespace UEL.Core.Components.RakerTG
         [UelParam("P52"), Category("4. FB & Weld"), DisplayName("P52 FB (Y/N)")] public bool FlatBar { get; set; }
         [UelParam("P11"), Category("4. FB & Weld"), DisplayName("P11 FB Mark")] public string FlatBarMark { get; set; }
         [UelParam("P5"), Category("4. FB & Weld"), DisplayName("P5  FB Mat.")] public string FlatBarMat { get; set; }
+        /// BIẾN MỚI, không có trong .uel gốc (người dùng 17/11/2026). Gốc chỉ có chuỗi "25*9".
+        [UelParam("P55"), Category("4. FB & Weld"), DisplayName("P55 FB Profile")] public string FlatBarProfile { get; set; }
         [Category("4. FB & Weld"), DisplayName("FB Class (gia dinh)")] public int FlatBarClass { get; set; }
         [UelParam("P10"), Category("4. FB & Weld"), DisplayName("P10 FLG. Weld gap")] public double FlangeWeldGap { get; set; }
         [UelParam("P12"), Category("4. FB & Weld"), DisplayName("P12 Weld Angle")] public double WeldAngle { get; set; }
@@ -75,8 +91,6 @@ namespace UEL.Core.Components.RakerTG
         [UelParam("P53"), Category("4. FB & Weld"), DisplayName("P53 Bott Scallop (Y/N)")] public bool BottScallop { get; set; }
 
         // ---------------- Hằng số chưa có trong hộp thoại gốc
-        [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("FB thk")] public double FlatBarThk { get; set; }
-        [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("FB width")] public double FlatBarWidth { get; set; }
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("FB dai them moi dau")] public double FlatBarExtend { get; set; }
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("Scallop R")] public double ScallopRadius { get; set; }
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("Fillet size")] public double FilletSize { get; set; }
@@ -84,10 +98,12 @@ namespace UEL.Core.Components.RakerTG
         public override string ToString()
         {
             return string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                "BP PL{0} {1} cls={2} mark={3} gaps T{4}/B{5}/L{6}/R{7} | GP PL{8} {9} cls={10} side={11} | bolts {12}x{13} M{14} {15} | FB={16} cls={17} | P13={18}",
+                "BP PL{0} {1} cls={2} mark={3} gaps T{4}/B{5}/L{6}/R{7} | GP PL{8} {9} cls={10} side={11} L={19} | bolts {12}x{13} M{14} {15} | FB={16} {20} {21} cls={17} | P13={18}",
                 BasePlateThk, BasePlateMat, BasePlateClass, BasePlateMark, TopGap, BottGap, LeftGap, RightGap,
                 GussetThk, GussetMat, GussetClass, GussetSideAuto ? "tu dong (phia trong)" : (GussetOnPositiveSide ? "1" : "0"),
-                BoltQtyX, BoltQtyY, BoltSize, BoltStandard, FlatBar ? 1 : 0, FlatBarClass, ConnType);
+                BoltQtyX, BoltQtyY, BoltSize, BoltStandard, FlatBar ? 1 : 0, FlatBarClass, ConnType,
+                GussetLength > 0 ? GussetLength.ToString(System.Globalization.CultureInfo.InvariantCulture) : "auto", FlatBarProfile, FlatBarMat)
+                + " | bang tra: " + (UseTable ? (string.IsNullOrEmpty(TablePath) ? "(mac dinh)" : TablePath) : "tat");
         }
     }
 }

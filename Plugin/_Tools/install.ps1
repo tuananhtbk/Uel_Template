@@ -78,6 +78,32 @@ function Install-Bitmaps($info) {
   }
 }
 
+# Bang tra mau cua component: Plugin\<Ten>\<Ten>.txt -> thu muc plugin cua Tekla (cho cuoi cung plugin tim bang tra).
+# KHONG ghi de file da co (nguoi dung co the da sua). Bang dung that nen dat o thu muc model / XS_PROJECT / XS_FIRM.
+function Install-Tables($info) {
+  $comps = @(Get-ChildItem -LiteralPath $Root -Directory | Where-Object { -not $_.Name.StartsWith('_') -and (Test-Path -LiteralPath (Join-Path $_.FullName 'Plugin.cs')) })
+  if ($Only) { $comps = @($comps | Where-Object { $_.Name -ieq $Only }) }
+  $files = @()
+  foreach ($c in $comps) {
+    $t = Join-Path $c.FullName ($c.Name + '.txt')
+    if (Test-Path -LiteralPath $t) { $files += Get-Item -LiteralPath $t }
+  }
+  # bo cai mang sang may khac (pack.bat): bang tra nam chung o <bo cai>\tables\
+  $packed = Join-Path $Root 'tables'
+  if ($files.Count -eq 0 -and (Test-Path -LiteralPath $packed)) { $files += Get-ChildItem -LiteralPath $packed -File -Filter *.txt }
+  foreach ($f in $files) {
+    $dest = Join-Path $info.Plugins $f.Name
+    if (Test-Path -LiteralPath $dest) { Write-Host "   Bang tra $($f.Name): da co trong thu muc plugin, giu nguyen (khong ghi de)."; continue }
+    try {
+      Copy-Item -LiteralPath $f.FullName -Destination $dest
+      Write-Host "   Da chep bang tra mau $($f.Name)"
+    } catch {
+      Write-Host "   Bang tra $($f.Name): CHEP THAT BAI - chay bang quyen Administrator. ($($_.Exception.Message))"
+      $script:failCount++
+    }
+  }
+}
+
 function Install-One($info) {
   Write-Host "[$($info.Ver)] $($info.Plugins)   (bo $($info.Target))"
   $dlls = @(Get-Dlls $info.Target)
@@ -113,6 +139,7 @@ function Install-One($info) {
     }
   }
   Install-Bitmaps $info
+  Install-Tables $info
   if ($running) { Write-Host "   Tekla $($info.Ver) dang mo: khoi dong lai Tekla de thay plugin moi." }
 }
 

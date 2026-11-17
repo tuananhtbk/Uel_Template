@@ -23,6 +23,8 @@ namespace UEL.Plugins
         [StructuresField("P7")] public double LeftGap;
         [StructuresField("P8")] public double BottGap;
         [StructuresField("P19")] public double RightGap;
+        [StructuresField("P56")] public string TablePath;        // biến mới: đường dẫn bảng tra theo profile Part 2
+        [StructuresField("P57")] public int UseTable;            // biến mới: 1 = dùng bảng tra (mặc định), 0 = chỉ hộp thoại
 
         // ---- Tab "Connection" ----
         [StructuresField("P13")] public int ConnType;
@@ -39,6 +41,8 @@ namespace UEL.Plugins
         [StructuresField("P44")] public double BoltEdgeX;
         [StructuresField("P45")] public double BoltEdgeY;
         [StructuresField("P46")] public double WebGap;
+        [StructuresField("P54")] public double GussetLength;     // biến mới (không có trong .uel gốc): dài cạnh dài bản mã
+        [StructuresField("P55")] public string FlatBarProfile;   // biến mới (không có trong .uel gốc): profile FB
         [StructuresField("P38_diameter")] public double BoltSize;
         [StructuresField("P38_screwdin")] public string BoltStandard;
         [StructuresField("P40")] public double Tolerance;
@@ -94,6 +98,11 @@ page(""TeklaStructures"", """")
             parameter("""", ""P3"", integer, number, 760, 100, 120)
             attribute("""", ""Mark"", label, ""%s"", none, none, ""0"", ""0"", 640, 138)
             parameter("""", ""P4"", string, text, 760, 135, 120)
+            attribute("""", ""Bang tra theo profile Part 2"", label, ""%s"", none, none, ""0"", ""0"", 640, 203)
+            attribute("""", ""File (trong = RAKER+T_GIRDER.txt)"", label, ""%s"", none, none, ""0"", ""0"", 640, 233)
+            parameter("""", ""P56"", string, text, 640, 252, 300)
+            attribute("""", ""Dung bang tra"", label, ""%s"", none, none, ""0"", ""0"", 640, 295)
+            parameter("""", ""P57"", YesNo, number, 760, 292, 120)
         }
         tab_page("""", ""Gusset & Bolt"", 2)
         {
@@ -102,6 +111,7 @@ page(""TeklaStructures"", """")
             parameter("""", ""P29"", distance, number, 150, 415, 64)
             parameter("""", ""P32"", distance, number, 250, 415, 64)
             parameter("""", ""P44"", distance, number, 410, 415, 64)
+            parameter("""", ""P54"", distance, number, 242, 91, 64)
             parameter("""", ""P45"", distance, number, 510, 129, 64)
             parameter("""", ""P43"", distance, number, 510, 182, 64)
             parameter("""", ""P34"", integer, number, 510, 235, 64)
@@ -141,6 +151,8 @@ page(""TeklaStructures"", """")
             parameter("""", ""P11"", string, text, 730, 40, 120)
             attribute("""", ""FB Mat."", label, ""%s"", none, none, ""0"", ""0"", 640, 78)
             parameter("""", ""P5"", material, text, 730, 75, 120)
+            attribute("""", ""FB Profile"", label, ""%s"", none, none, ""0"", ""0"", 640, 113)
+            parameter("""", ""P55"", profile, text, 730, 110, 120)
         }
     }
 }

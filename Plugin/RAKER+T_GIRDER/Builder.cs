@@ -34,6 +34,11 @@ namespace UEL.Core.Components.RakerTG
         private V3 _yp, _zp;        // 2 trục nằm trong mặt bản đế
         private bool _gussetPos;    // bản mã ở phía +Z cục bộ (true) hay -Z (false) của bụng raker
         private double _up = 1.0;   // +1: trục Y cục bộ của raker hướng lên (cánh +Y là cánh trên); -1: ngược lại
+        // Phần đầu prefix = mid(P99,0,find(P99,"M")), P99 = prefix main part của assembly mà part mới thuộc về
+        // (Plugin\CLAUDE.md mục 4.3): bản đế + bản mã thuộc assembly Part 1 (T-girder), FB thuộc assembly Part 2 (raker).
+        private string _headP1 = "", _headP2 = "";
+        private WorkPlaneHandler _wph;
+        private TransformationPlane _local;                 // hệ cục bộ đầu raker (A, X, Y)
 
         // Hệ cục bộ đầu raker (toàn cục) + dữ liệu dầm chính, để tính kích thước bản đế theo primary (CreateBasePlate)
         private V3 _A, _X, _Y, _Z;
@@ -68,6 +73,13 @@ namespace UEL.Core.Components.RakerTG
 
         private bool BuildInGlobal(WorkPlaneHandler wph, Beam girder, Beam raker)
         {
+            // Prefix part mới theo main part của assembly chứa nó: mid(prefix main part, 0, find(.., "M")) + ô Mark.
+            //   bản đế (P4), bản mã (P21): hàn vào T-girder -> assembly Part 1;  FB (P11): hàn vào raker -> assembly Part 2.
+            // .uel gốc dùng thẳng P4/P21/P11; đổi theo quy tắc người dùng 17/11/2026.
+            _wph = wph;
+            _headP1 = PartPrefix.HeadOfAssembly(girder, "Part 1 (T-girder)");
+            _headP2 = PartPrefix.HeadOfAssembly(raker, "Part 2 (raker)");
+
             // ---- 1. Trục 2 cấu kiện ----
             V3 g0, g1, r0, r1;
             if (!CenterLine(girder, out g0, out g1) || !CenterLine(raker, out r0, out r1))
@@ -145,7 +157,8 @@ namespace UEL.Core.Components.RakerTG
                 return false;
             }
 
-            wph.SetCurrentTransformationPlane(new TransformationPlane(A.ToPoint(), X.ToVector(), Y.ToVector()));
+            _local = new TransformationPlane(A.ToPoint(), X.ToVector(), Y.ToVector());
+            wph.SetCurrentTransformationPlane(_local);
 
             // ---- 5. Tạo cấu kiện (toạ độ cục bộ) ----
             double rootGap = _p.FlatBar ? _p.FlangeWeldGap : 0.0;
@@ -169,7 +182,7 @@ namespace UEL.Core.Components.RakerTG
             if (gusset == null) return false;
             CreateBolts(raker, gusset, tw, webEnd);
 
-            List<ContourPlate> bars = new List<ContourPlate>();
+            List<Part> bars = new List<Part>();
             if (_p.FlatBar)
             {
                 // thanh lót nằm ở phía CHÂN mối hàn (đối diện mặt vát): cánh trên -> dưới mặt trong cánh trên;
@@ -181,7 +194,7 @@ namespace UEL.Core.Components.RakerTG
             // ---- 6. Mối hàn ----
             Fillet(girder, basePlate, true);
             Fillet(basePlate, gusset, true);
-            foreach (ContourPlate fb in bars) if (fb != null) Fillet(raker, fb, true);
+            foreach (Part fb in bars) if (fb != null) Fillet(raker, fb, true);
             FlangeCjp(raker, basePlate);
             return true;
         }
@@ -293,7 +306,7 @@ namespace UEL.Core.Components.RakerTG
             pts.Add(T * top + R * left + mid);
             pts.Add(T * top + R * right + mid);
             pts.Add(T * bot + R * right + mid);
-            return Plate(pts, _p.BasePlateThk, _p.BasePlateMat, _p.BasePlateClass, _p.BasePlateMark, "PLATE");
+            return Plate(pts, _p.BasePlateThk, _p.BasePlateMat, _p.BasePlateClass, PartPrefix.Make(_headP1, _p.BasePlateMark), "PLATE");
         }
 
         /// Vector toàn cục -> hệ cục bộ đầu raker.
@@ -339,6 +352,19 @@ namespace UEL.Core.Components.RakerTG
                     push = Math.Max(push, OnPlane(0.0, q.Y, q.Z + s * half).X - q.X);
             V3 shift = new V3(push, 0, 0);
             Logger.Log(string.Format(CultureInfo.InvariantCulture, "Ban ma: day canh trong doc truc raker {0:0.##} mm de cham ban de", push));
+
+            // P54 (biến mới, người dùng 17/11/2026): nhập chiều dài cạnh dài bản mã thì cạnh ngắn ngoài
+            // = cạnh ngắn trong (sau khi đẩy) + P54 dọc trục raker; eH lúc này chỉ là kết quả, ghi log để kiểm tra.
+            if (_p.GussetLength > 0)
+            {
+                farTop = nearTop + shift + new V3(_p.GussetLength, 0, 0);
+                farBot = nearBot + shift + new V3(_p.GussetLength, 0, 0);
+                double eH = (farTop.X - k * H - xLast) / Math.Sqrt(1.0 + k * k);   // vuông góc cạnh ngắn ngoài
+                Logger.Log(string.Format(CultureInfo.InvariantCulture,
+                    "Ban ma: dai canh dai = P54 = {0:0.##} -> eH thuc te = {1:0.##} (P44 = {2:0.##} bi bo qua)", _p.GussetLength, eH, _p.BoltEdgeX));
+                if (eH < _p.BoltSize)
+                    Logger.Log("CANH BAO: P54 qua ngan - bu long cot cuoi qua sat (hoac nam ngoai) canh ngoai ban ma.");
+            }
             if (Math.Min(farTop.X - (nearTop.X + push), farBot.X - (nearBot.X + push)) <= 1.0)
             {
                 Logger.Log("Ban ma qua ngan: tang P29/P44 hoac giam goc nghieng.");
@@ -351,12 +377,14 @@ namespace UEL.Core.Components.RakerTG
             pts.Add(farBot);
             pts.Add(nearBot + shift);
             pts.Add(nearTop + shift);
-            Logger.Log(string.Format(CultureInfo.InvariantCulture,
-                "Ban ma: eH = {0:0.##} vuong goc canh ngan ngoai (doc truc raker {1:0.##})", _p.BoltEdgeX, _p.BoltEdgeX * Math.Sqrt(1.0 + k * k)));
+            if (_p.GussetLength <= 0)
+                Logger.Log(string.Format(CultureInfo.InvariantCulture,
+                    "Ban ma: eH = {0:0.##} vuong goc canh ngan ngoai (doc truc raker {1:0.##}) -> dai canh dai {2:0.##}",
+                    _p.BoltEdgeX, _p.BoltEdgeX * Math.Sqrt(1.0 + k * k), farTop.X - (nearTop.X + push)));
             double skew = Math.Atan2(-_n.Y, _n.X) * 180.0 / Math.PI;
             if (Math.Abs(skew) > 0.05)
                 Logger.Log(string.Format(CultureInfo.InvariantCulture, "Ban ma: hinh binh hanh, canh ngan nghieng {0:0.##} do so voi phuong vuong goc truc raker", skew));
-            return Plate(pts, _p.GussetThk, _p.GussetMat, _p.GussetClass, _p.GussetMark, "PLATE");
+            return Plate(pts, _p.GussetThk, _p.GussetMat, _p.GussetClass, PartPrefix.Make(_headP1, _p.GussetMark), "PLATE");
         }
 
         /// FB (thanh lót mối hàn cánh) nằm NGANG, áp vào mặt cánh ở cao độ yFace, thân thanh nằm PHÍA DƯỚI mặt đó.
@@ -364,11 +392,15 @@ namespace UEL.Core.Components.RakerTG
         /// Hình dạng (yêu cầu người dùng 17/11/2026): HÌNH CHỮ NHẬT, không cắt theo góc nghiêng:
         ///   - chạy dọc đường hàn (giao tuyến mặt bản đế với mặt cánh), cạnh dài tì vào mặt bản đế;
         ///   - dài = bề rộng cánh đo dọc đường hàn + FlatBarExtend (15) mỗi đầu, 2 đầu vuông góc cạnh dài;
-        ///   - rộng FlatBarWidth vuông góc đường hàn (trong mặt cánh), dày FlatBarThk theo Y.
+        ///   - tiết diện lấy từ profile P55 (mặc định FB25*9): cạnh lớn (25) vuông góc đường hàn, nằm trong mặt cánh;
+        ///     cạnh nhỏ (9) theo Y - tức "quay ngang" như bản trước (yêu cầu người dùng 17/11/2026).
         ///   Bản đế nghiêng theo Y so với thanh thì đẩy thanh ra vừa đủ để mặt sâu nhất chạm bản đế (không cắm vào).
-        private ContourPlate CreateFlatBar(double yFace, double b)
+        ///   Dựng bằng Beam (để giữ đúng profile FB), không còn là ContourPlate PL9.
+        private Beam CreateFlatBar(double yFace, double b)
         {
-            double halfT = _p.FlatBarThk / 2.0;
+            double wide, thin;
+            FlatBarSize(out wide, out thin);
+            double halfT = thin / 2.0;
             double ym = yFace - _up * halfT;                    // mặt giữa thanh
             V3 Yv = new V3(0, 1, 0);
             V3 t = _n.Cross(Yv).Unit();                         // phương đường hàn
@@ -383,17 +415,126 @@ namespace UEL.Core.Components.RakerTG
             V3 c = OnPlane(0.0, ym, 0.0);                       // trên mặt bản đế, giữa bề rộng cánh
             double halfL = (b / 2.0) / Math.Abs(t.Z) + _p.FlatBarExtend;
             double push = halfT * Math.Abs(_n.Y) / nu;          // không cắm vào bản đế khi bản đế nghiêng theo Y
-            V3 a = c + t * -halfL + u * push;
-            V3 d = c + t * halfL + u * push;
-            V3 w = u * _p.FlatBarWidth;
-            List<V3> pts = new List<V3>();
-            pts.Add(a);
-            pts.Add(d);
-            pts.Add(d + w);
-            pts.Add(a + w);
-            Logger.Log(string.Format(CultureInfo.InvariantCulture, "Flat bar: dai {0:0.#} (canh {1:0.#} + 2x{2:0.#}), rong {3:0.#}, day {4:0.#}",
-                2 * halfL, 2 * halfL - 2 * _p.FlatBarExtend, _p.FlatBarExtend, _p.FlatBarWidth, _p.FlatBarThk));
-            return Plate(pts, _p.FlatBarThk, _p.FlatBarMat, _p.FlatBarClass, _p.FlatBarMark, "FLAT_BAR");
+            // trục thanh: giữa bề rộng (cạnh tì cách bản đế "push", cạnh kia xa thêm "wide"), giữa chiều dày (ym)
+            V3 s = c + t * -halfL + u * (push + wide / 2.0);
+            V3 e = c + t * halfL + u * (push + wide / 2.0);
+            Logger.Log(string.Format(CultureInfo.InvariantCulture, "Flat bar {0}: dai {1:0.#} (canh {2:0.#} + 2x{3:0.#}), rong {4:0.#}, day {5:0.#}",
+                _p.FlatBarProfile, 2 * halfL, 2 * halfL - 2 * _p.FlatBarExtend, _p.FlatBarExtend, wide, thin));
+            return InsertFlatBar(s, e, u, wide, PartPrefix.Make(_headP2, _p.FlatBarMark));
+        }
+
+        /// Kích thước tiết diện FB đọc từ chuỗi profile (vd. "FB25*9" -> rộng 25, dày 9): số lớn = rộng, số nhỏ = dày.
+        private void FlatBarSize(out double wide, out double thin)
+        {
+            List<double> v = new List<double>();
+            foreach (System.Text.RegularExpressions.Match m in
+                     System.Text.RegularExpressions.Regex.Matches(_p.FlatBarProfile ?? "", @"\d+(\.\d+)?"))
+                v.Add(double.Parse(m.Value, CultureInfo.InvariantCulture));
+            if (v.Count >= 2 && v[0] > 0 && v[1] > 0)
+            {
+                wide = Math.Max(v[0], v[1]);
+                thin = Math.Min(v[0], v[1]);
+                return;
+            }
+            wide = 25; thin = 9;
+            Logger.Log("CANH BAO: khong doc duoc kich thuoc tu profile FB '" + _p.FlatBarProfile + "' -> tam lay 25 x 9.");
+        }
+
+        /// Dựng FB dạng Beam từ s tới e (toạ độ cục bộ), cạnh rộng theo u, cạnh dày theo Y cục bộ.
+        /// Chiều xoay profile của Tekla không đoán: dựng trong mặt phẳng tạm có Z = u, đọc lại khối đặc; nếu cạnh rộng
+        /// không nằm theo Z thì xoay profile 90 độ (FRONT <-> TOP) rồi Modify. Profile đối xứng nên dấu xoay không quan trọng.
+        private Beam InsertFlatBar(V3 s, V3 e, V3 u, double wide, string prefix)
+        {
+            V3 sG = _A + _X * s.X + _Y * s.Y + _Z * s.Z;
+            V3 eG = _A + _X * e.X + _Y * e.Y + _Z * e.Z;
+            V3 tG = (eG - sG).Unit();
+            V3 uG = (_X * u.X + _Y * u.Y + _Z * u.Z).Unit();
+            double len = (eG - sG).Norm();
+
+            Beam fb = new Beam();
+            fb.Profile.ProfileString = _p.FlatBarProfile;
+            fb.Material.MaterialString = _p.FlatBarMat;
+            fb.Class = _p.FlatBarClass.ToString(CultureInfo.InvariantCulture);
+            fb.Name = "FLAT_BAR";
+            fb.PartNumber.Prefix = prefix;
+            fb.PartNumber.StartNumber = 1;
+            fb.Position.Depth = Position.DepthEnum.MIDDLE;
+            fb.Position.Plane = Position.PlaneEnum.MIDDLE;
+            fb.Position.Rotation = Position.RotationEnum.FRONT;
+            fb.StartPoint = new Point(0, 0, 0);
+            fb.EndPoint = new Point(len, 0, 0);
+
+            try
+            {
+                // Lỗi đã gặp (17/11/2026): tạo/đặt mặt phẳng tạm khi đang ở hệ cục bộ _local thì Tekla hiểu sG/tG/uG
+                // theo hệ cục bộ -> FB nằm cách component hàng chục mét. Phải về hệ toàn cục TRƯỚC rồi mới tạo mặt phẳng tạm.
+                _wph.SetCurrentTransformationPlane(new TransformationPlane());
+                TransformationPlane fbPlane = new TransformationPlane(sG.ToPoint(), tG.ToVector(), uG.Cross(tG).ToVector());
+                _wph.SetCurrentTransformationPlane(fbPlane);
+                if (!fb.Insert())
+                {
+                    Logger.Log("Khong tao duoc FLAT_BAR (" + prefix + ", " + _p.FlatBarProfile + ").");
+                    return null;
+                }
+                _created.Add(fb);
+                double ez, ey;
+                Extents(fb, out ey, out ez);
+                if (Math.Abs(ez - wide) > 0.5 && Math.Abs(ey - wide) <= 0.5)
+                {
+                    fb.Position.Rotation = Position.RotationEnum.TOP;
+                    fb.Modify();
+                    Extents(fb, out ey, out ez);
+                }
+                if (Math.Abs(ez - wide) > 0.5)
+                    Logger.Log(string.Format(CultureInfo.InvariantCulture,
+                        "CANH BAO: FB {0} khong nam ngang dung (rong theo phuong vuong goc duong han = {1:0.#}, mong muon {2:0.#}). Kiem tra profile co trong catalog.",
+                        _p.FlatBarProfile, ez, wide));
+            }
+            finally
+            {
+                _wph.SetCurrentTransformationPlane(new TransformationPlane());
+                _wph.SetCurrentTransformationPlane(_local);
+            }
+
+            // Kiểm tra vị trí: trung điểm FB phải trùng trung điểm mong muốn (toạ độ toàn cục), lệch > 1 mm thì báo.
+            Beam got = new Beam();
+            got.Identifier = fb.Identifier;
+            _wph.SetCurrentTransformationPlane(new TransformationPlane());
+            try
+            {
+                if (got.Select())
+                {
+                    V3 mid = (V3.From(got.StartPoint) + V3.From(got.EndPoint)) * 0.5;
+                    double off = (mid - (sG + eG) * 0.5).Norm();
+                    if (off > 1.0)
+                        Logger.Log(string.Format(CultureInfo.InvariantCulture, "CANH BAO: FB lech vi tri mong muon {0:0.#} mm.", off));
+                }
+            }
+            finally
+            {
+                _wph.SetCurrentTransformationPlane(_local);
+            }
+
+            // class 99 (lỗi đã gặp với tấm, xem Plate): đọc lại, bị đổi thì gán lại
+            Beam check = new Beam();
+            check.Identifier = fb.Identifier;
+            if (check.Select() && check.Class != fb.Class)
+            {
+                check.Class = fb.Class;
+                check.Modify();
+            }
+            Logger.Log("Tao FLAT_BAR " + _p.FlatBarProfile + " " + _p.FlatBarMat + " mark=" + prefix + " class=" + fb.Class);
+            return fb;
+        }
+
+        /// Kích thước khối đặc của part theo Y và Z của mặt phẳng làm việc hiện tại.
+        private static void Extents(Part part, out double ey, out double ez)
+        {
+            ey = ez = 0;
+            Solid sol = part.GetSolid();
+            if (sol == null) return;
+            ey = sol.MaximumPoint.Y - sol.MinimumPoint.Y;
+            ez = sol.MaximumPoint.Z - sol.MinimumPoint.Z;
         }
 
         private void FitRaker(Beam raker, double rootGap)
@@ -439,7 +580,13 @@ namespace UEL.Core.Components.RakerTG
             pts.Add(q0);
             pts.Add(pBev);
             pts.Add(pFit - u * extra);
-            double len = b / Math.Abs(w.Z) + 40.0;                            // phủ hết bề rộng cánh dọc theo w
+            // Chiều dài khối cắt dọc w (17/11/2026, người dùng: góc nhọn thì cắt chưa hết đường hàn):
+            //   mép cánh dài b/|w.Z|; ngoài ra phần vát lùi vào thân cánh một đoạn dU theo u, mà u có thành phần Z
+            //   -> ở 2 mép bên cánh cần thêm dU*|u.Z|/|w.Z| mỗi đầu. Cộng thêm 50 mm mỗi đầu cho chắc.
+            //   Khối cắt chỉ nằm trong chiều dày cánh (từ mặt chân 2 mm ra ngoài mặt yUp) nên dài thêm không cắt vào bụng.
+            double dU = 0.0;
+            foreach (V3 q in pts) dU = Math.Max(dU, Math.Abs((q - q0).Dot(u)));
+            double len = (b + 2.0 * dU * Math.Abs(u.Z)) / Math.Abs(w.Z) + 100.0;
             Cut(raker, pts, len);
             Logger.Log(string.Format(CultureInfo.InvariantCulture,
                 "Vat mep canh {0}: goc {1:0.#} do, khe chan {2:0.#}, mat chan 2 mm, lui mep tren {3:0.#} mm",
@@ -538,8 +685,9 @@ namespace UEL.Core.Components.RakerTG
             bolts.Position.Plane = Position.PlaneEnum.MIDDLE;
             bolts.Position.Rotation = Position.RotationEnum.FRONT;   // thân bu lông theo trục Z cục bộ (xuyên bụng)
             bolts.Bolt = true;
-            // 17/11/2026: bỏ washer thứ nhất (ô đầu tiên của "Include in bolt assembly"), theo ảnh người dùng
-            bolts.Washer1 = false; bolts.Washer2 = true; bolts.Washer3 = true;
+            // 17/11/2026, theo ảnh người dùng ("Include in bolt assembly"): bỏ washer 1 và washer 3, chỉ giữ washer 2 + nut 1
+            //   (đọc lại trên model sau khi người dùng sửa tay: W1=F W2=T W3=F N1=T N2=F)
+            bolts.Washer1 = false; bolts.Washer2 = true; bolts.Washer3 = false;
             bolts.Nut1 = true; bolts.Nut2 = false;
 
             for (int m = 0; m < xs.Count; m++)

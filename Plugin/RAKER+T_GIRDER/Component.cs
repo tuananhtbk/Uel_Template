@@ -19,12 +19,13 @@ namespace UEL.Core.Components.RakerTG
         public override void AfterApply(object prm, IDictionary values)
         {
             RakerTGParams p = (RakerTGParams)prm;
-            // Như bản RakerTG cũ: không nhập FB Mat. thì lấy theo vật liệu bản đế
-            if (values != null && !values.Contains("P5")) p.FlatBarMat = p.BasePlateMat;
+            // FB Mat. (P5) để trống -> SS275 như mặc định của .uel gốc (người dùng 17/11/2026; trước đây lấy theo bản đế)
+            if (string.IsNullOrEmpty(p.FlatBarProfile)) p.FlatBarProfile = "FB25*9";
             // P24 để trống -> bản mã tự đặt phía trong góc primary/secondary; có nhập P24 -> theo P24
             if (values != null && values.Contains("P24")) p.GussetSideAuto = false;
             p.BoltQtyX = Math.Max(1, p.BoltQtyX);
             p.BoltQtyY = Math.Max(1, p.BoltQtyY);
+            if (p.TablePath == null) p.TablePath = "";
             if (p.ConnType == 1)
                 Logger.Log("CANH BAO: P13 = 1 (kieu khong ban ma/bu long) chua duoc lam - dang dung theo kieu P13 = 0.");
         }
@@ -38,7 +39,27 @@ namespace UEL.Core.Components.RakerTG
                 Logger.Log("Can chon 1 dam chinh (T-girder) va 1 dam phu (raker) dang Beam.");
                 return false;
             }
-            RakerTGBuilder b = new RakerTGBuilder(model, (RakerTGParams)prm);
+            RakerTGParams p = (RakerTGParams)prm;
+            if (p.UseTable)
+            {
+                // Bảng tra theo profile Part 2 (người dùng 17/11/2026): làm trên BẢN SAO để không đổi bộ thông số của
+                // hộp thoại/EXE (lần dựng sau với P57 = No vẫn ra đúng giá trị hộp thoại).
+                p = (RakerTGParams)typeof(object).GetMethod("MemberwiseClone",
+                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(prm, null);
+                string modelPath = "";
+                try { modelPath = model.GetInfo().ModelPath; } catch (Exception) { }
+                IDictionary got = LookupTable.ApplyByKey(p, p.TablePath, UEL.ComponentInfo.Name + ".txt", modelPath,
+                                                         raker.Profile.ProfileString, "P56", "P57");
+                // giữ đúng các quy tắc của AfterApply cho giá trị lấy từ bảng
+                if (got.Contains("P24")) p.GussetSideAuto = false;
+                p.BoltQtyX = Math.Max(1, p.BoltQtyX);
+                p.BoltQtyY = Math.Max(1, p.BoltQtyY);
+            }
+            else
+            {
+                Logger.Log("Bang tra: tat (P57 = No) -> chi dung gia tri hop thoai.");
+            }
+            RakerTGBuilder b = new RakerTGBuilder(model, p);
             bool ok;
             try
             {

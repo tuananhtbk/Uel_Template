@@ -221,6 +221,10 @@ internal static class VeHinh
         p.Extra.Add(Label("Mat.", x, y + 35)); p.Extra.Add(Param("P2", "material", "text", x + 120, y + 35, 120));
         p.Extra.Add(Label("Class", x, y + 70)); p.Extra.Add(Param("P3", "integer", "number", x + 120, y + 70, 120));
         p.Extra.Add(Label("Mark", x, y + 105)); p.Extra.Add(Param("P4", "string", "text", x + 120, y + 105, 120));
+        // Bảng tra theo profile Part 2 (biến mới 17/11/2026): cột có trong bảng đè giá trị hộp thoại
+        p.Extra.Add(Label("Bang tra theo profile Part 2", x, y + 170));
+        p.Extra.Add(Label("File (trong = RAKER+T_GIRDER.txt)", x, y + 200)); p.Extra.Add(Param("P56", "string", "text", x, y + 222, 300));
+        p.Extra.Add(Label("Dung bang tra", x, y + 262)); p.Extra.Add(Param("P57", "YesNo", "number", x + 120, y + 262, 120));
         return p;
     }
 
@@ -258,6 +262,10 @@ internal static class VeHinh
         Text("Bolt dist. x", 238, 378);
         Slot("P44", "distance", "number", 400, 405, null);
         Text("eH", 425, 378);
+
+        // P54 (biến mới 17/11/2026): chiều dài cạnh dài bản mã, đo dọc trục raker; để trống = tự tính theo eH
+        DimH(60, 470, 92, 110, 110);
+        Slot("P54", "distance", "number", 232, 81, "Gusset L (trong = auto)", "right");
 
         // kích thước theo phương vuông góc cạnh dài (bên phải bản mã)
         DimV(110, 150, 488, 470, 400);
@@ -331,7 +339,8 @@ internal static class VeHinh
 
         int x = p.PicX + p.PicW + 30, y = p.PicY + 30;
         p.Extra.Add(Label("FB Mark", x, y)); p.Extra.Add(Param("P11", "string", "text", x + 90, y, 120)); y += 35;
-        p.Extra.Add(Label("FB Mat.", x, y)); p.Extra.Add(Param("P5", "material", "text", x + 90, y, 120));
+        p.Extra.Add(Label("FB Mat.", x, y)); p.Extra.Add(Param("P5", "material", "text", x + 90, y, 120)); y += 35;
+        p.Extra.Add(Label("FB Profile", x, y)); p.Extra.Add(Param("P55", "profile", "text", x + 90, y, 120));
         return p;
     }
 
