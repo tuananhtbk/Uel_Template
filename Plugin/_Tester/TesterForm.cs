@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 using Tekla.Structures.Model;
 using Tekla.Structures.Model.UI;
@@ -254,11 +255,69 @@ namespace UEL.Tester
             return PluginMeta.ReadUserInterfaceConst(dll);
         }
 
+        /// Plugin\<Ten>\Plugin.cs (mã nguồn) của component, hoặc null.
+        private static string PluginSource(string key)
+        {
+            string pluginRoot = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\'));
+            string f = Path.Combine(Path.Combine(pluginRoot, key), "Plugin.cs");
+            return File.Exists(f) ? f : null;
+        }
+
+        /// Đọc hằng UserInterface = @"...";  thẳng từ Plugin.cs (không cần build _DEV.dll):
+        ///   "" -> "   và   """ + PluginName + @"""  -> "<tên>_DEV"
+        private static string InpFromSource(string file, string key)
+        {
+            string src = File.ReadAllText(file);
+            int a = src.IndexOf("UserInterface = @\"", StringComparison.Ordinal);
+            if (a < 0) return null;
+            a += "UserInterface = @\"".Length;
+            // kết thúc: dấu " đứng một mình (không phải "") theo sau là ;
+            int i = a;
+            StringBuilder sb = new StringBuilder();
+            while (i < src.Length)
+            {
+                if (src[i] == '"')
+                {
+                    if (i + 1 < src.Length && src[i + 1] == '"') { sb.Append('"'); i += 2; continue; }
+                    // hết 1 đoạn chuỗi @"...": nối tiếp kiểu  " + PluginName + @"  hoặc kết thúc ;
+                    int semi = src.IndexOf(';', i);
+                    int at = src.IndexOf("@\"", i, StringComparison.Ordinal);
+                    if (at >= 0 && (semi < 0 || at < semi))
+                    {
+                        sb.Append(key + "_DEV");
+                        i = at + 2;
+                        continue;
+                    }
+                    break;
+                }
+                sb.Append(src[i]);
+                i++;
+            }
+            return sb.ToString();
+        }
+
+        private static long LatestBitmapTicks(string key)
+        {
+            long t = 0;
+            try
+            {
+                string pluginRoot = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\'));
+                string d = Path.Combine(Path.Combine(pluginRoot, key), "bitmaps");
+                if (Directory.Exists(d)) foreach (string f in Directory.GetFiles(d)) t = Math.Max(t, File.GetLastWriteTimeUtc(f).Ticks);
+            }
+            catch { }
+            return t;
+        }
+
         private void RefreshDialog()
         {
             if (_key == null) return;
-            string dll = ShellDll(_key);
-            string stamp = dll == null ? null : dll + "|" + File.GetLastWriteTimeUtc(dll).Ticks;
+            // Ưu tiên hộp thoại trong mã nguồn Plugin.cs (thấy ngay khi sửa, không phải build _DEV.dll);
+            // không có mã nguồn thì đọc từ DLL.
+            string srcFile = PluginSource(_key);
+            string dll = srcFile == null ? ShellDll(_key) : null;
+            string from = srcFile ?? dll;
+            string stamp = from == null ? null : from + "|" + File.GetLastWriteTimeUtc(from).Ticks + "|" + LatestBitmapTicks(_key);
             if (_inp != null && _inpKey == _key && _inpStamp == stamp)
             {
                 _inp.RefreshDefaults(_params);
@@ -267,10 +326,10 @@ namespace UEL.Tester
 
             Dictionary<string, string> keep = _inp != null && _inpKey == _key ? _inp.Snapshot() : null;
             string inp = null;
-            if (dll != null)
+            if (from != null)
             {
-                try { inp = ReadUserInterface(dll); }
-                catch (Exception ex) { AppendLog("Khong doc duoc hop thoai trong " + Path.GetFileName(dll) + ": " + ex.Message); }
+                try { inp = srcFile != null ? InpFromSource(srcFile, _key) : ReadUserInterface(dll); }
+                catch (Exception ex) { AppendLog("Khong doc duoc hop thoai trong " + from + ": " + ex.Message); }
             }
             _dialogPage.Controls.Clear();
             if (_inp != null) _inp.Dispose();
@@ -290,6 +349,19 @@ namespace UEL.Tester
                 return;
             }
 
+            // ảnh hộp thoại: Plugin\<Ten>\bitmaps trước, rồi thư mục ảnh của Tekla (DAK_BMPPATH)
+            InpView.BitmapDirs.Clear();
+            string pluginRoot = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\'));
+            InpView.BitmapDirs.Add(Path.Combine(Path.Combine(pluginRoot, _key), "bitmaps"));
+            try
+            {
+                string ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(Program.ApiDir, "Tekla.Structures.Model.dll")).FileMajorPart + ".0";
+                InpView.BitmapDirs.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Trimble\Tekla Structures\" + ver + @"\Bitmaps"));
+                string apiParent = Path.GetDirectoryName(Program.ApiDir.TrimEnd('\\'));      // 18.0: ...\nt\bin
+                InpView.BitmapDirs.Add(Path.Combine(Path.GetDirectoryName(apiParent), "bitmaps"));   // 18.0: ...\nt\bitmaps
+                InpView.BitmapDirs.Add(Path.Combine(Program.ApiDir, @"Env\Bitmaps"));       // 2025: ...\bin\Env\Bitmaps
+            }
+            catch { }
             _inp = new InpView(inp, _params, keep, AppendLog);
             Label hint = new Label();
             hint.Dock = DockStyle.Bottom;
@@ -298,7 +370,7 @@ namespace UEL.Tester
             hint.Text = "O de trong = gia tri mac dinh (chu xam, lay tu tab 'Bang thong so'), giong hop thoai Tekla. O vang: ten bien khong co trong Params.cs.";
             _dialogPage.Controls.Add(_inp);
             _dialogPage.Controls.Add(hint);
-            _dialogPage.Text = "Hop thoai (giong Tekla, tu " + Path.GetFileName(dll) + ")";
+            _dialogPage.Text = "Hop thoai (giong Tekla, tu " + (srcFile != null ? _key + "\\Plugin.cs" : Path.GetFileName(dll)) + ")";
             if (keep != null) AppendLog("Da ve lai hop thoai (Plugin.cs vua build lai), giu cac o dang nhap.");
         }
 

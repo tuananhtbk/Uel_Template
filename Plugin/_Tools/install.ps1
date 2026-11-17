@@ -35,6 +35,49 @@ function Get-Dlls([string]$bo) {
 }
 
 $okCount = 0; $failCount = 0
+
+# Thu muc anh hop thoai cua Tekla = phan tu dau cua DAK_BMPPATH trong teklastructures.ini
+#   18.0: %XS_DIR%\nt\bitmaps\   2019-2021: %XSDATADIR%\bitmaps\ (C:\ProgramData\Trimble\Tekla Structures\<ban>)
+#   2025: %XSDATADIR%\bitmaps\;%XSBIN%Env\bitmaps\
+function Get-BitmapDir($info) {
+  $dataDir = Join-Path $env:ProgramData ("Trimble\Tekla Structures\" + $info.Ver)
+  foreach ($bin in (Join-Path $info.Root 'nt\bin'), (Join-Path $info.Root 'bin')) {
+    $ini = Join-Path $bin 'teklastructures.ini'
+    if (-not (Test-Path -LiteralPath $ini)) { continue }
+    $line = Select-String -LiteralPath $ini -Pattern '^\s*set\s+DAK_BMPPATH\s*=\s*(.+)$' | Select-Object -First 1
+    if (-not $line) { continue }
+    $first = ($line.Matches[0].Groups[1].Value -split ';')[0].Trim()
+    $first = $first.Replace('%XS_DIR%', $info.Root).Replace('%XSDATADIR%', $dataDir).Replace('%XSBIN%', $bin + '\')
+    if ($first -notmatch '%') { return $first.TrimEnd('\') }
+  }
+  if ($info.Major -lt 2019) { return (Join-Path $info.Root 'nt\bitmaps') }
+  return (Join-Path $dataDir 'Bitmaps')
+}
+
+# Anh hop thoai cua component: Plugin\<Ten>\bitmaps\*.bmp (hinh minh hoa, ve boi <Ten>\_hinh\VeHinh.cs)
+function Install-Bitmaps($info) {
+  $comps = @(Get-ChildItem -LiteralPath $Root -Directory | Where-Object { -not $_.Name.StartsWith('_') -and (Test-Path -LiteralPath (Join-Path $_.FullName 'Plugin.cs')) })
+  if ($Only) { $comps = @($comps | Where-Object { $_.Name -ieq $Only }) }
+  $files = @()
+  foreach ($c in $comps) {
+    $bd = Join-Path $c.FullName 'bitmaps'
+    if (Test-Path -LiteralPath $bd) { $files += Get-ChildItem -LiteralPath $bd -File | Where-Object { $_.Extension -match '^\.(bmp|xbm|png)$' } }
+  }
+  # bo cai mang sang may khac (pack.bat): anh nam chung o <bo cai>\bitmaps\
+  $packed = Join-Path $Root 'bitmaps'
+  if ($files.Count -eq 0 -and (Test-Path -LiteralPath $packed)) { $files += Get-ChildItem -LiteralPath $packed -File }
+  if ($files.Count -eq 0) { return }
+  $dest = Get-BitmapDir $info
+  try {
+    if (-not (Test-Path -LiteralPath $dest)) { New-Item -ItemType Directory -Force $dest | Out-Null }
+    foreach ($f in $files) { Copy-Item -LiteralPath $f.FullName -Destination (Join-Path $dest $f.Name) -Force }
+    Write-Host "   Da chep $($files.Count) anh hop thoai vao $dest"
+  } catch {
+    Write-Host "   Anh hop thoai: CHEP THAT BAI vao $dest - chay bang quyen Administrator. ($($_.Exception.Message))"
+    $script:failCount++
+  }
+}
+
 function Install-One($info) {
   Write-Host "[$($info.Ver)] $($info.Plugins)   (bo $($info.Target))"
   $dlls = @(Get-Dlls $info.Target)
@@ -69,6 +112,7 @@ function Install-One($info) {
       $script:failCount++
     }
   }
+  Install-Bitmaps $info
   if ($running) { Write-Host "   Tekla $($info.Ver) dang mo: khoi dong lai Tekla de thay plugin moi." }
 }
 

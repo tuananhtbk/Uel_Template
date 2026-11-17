@@ -314,15 +314,19 @@ namespace UEL.Core.Components.RakerTG
             double z0 = side * (tw + _p.GussetThk) / 2.0;
             double H = 0.5 * (_p.BoltQtyY - 1) * _p.BoltDistY + _p.BoltEdgeY;
             double xw = webEnd / _n.X;
-            double xf = xw + _p.BoltToWebEnd + (_p.BoltQtyX - 1) * _p.BoltDistX + _p.BoltEdgeX;
+            double k = -_n.Y / _n.X;                            // độ nghiêng cạnh ngắn: dx = k * dy (giống cột bu lông)
 
             V3 nearTop = OnPlane(0.0, H, z0);
             V3 nearBot = OnPlane(0.0, -H, z0);
-            if (xf <= Math.Max(nearTop.X, nearBot.X))
-            {
-                Logger.Log("Ban ma qua ngan: tang P29/P44 hoac giam goc nghieng.");
-                return null;
-            }
+
+            // Hình bình hành (yêu cầu người dùng 17/11/2026): cạnh ngắn phía ngoài song song cạnh ngắn phía trong.
+            // Cạnh ngoài tính từ CỘT BU LÔNG CUỐI (không phụ thuộc khoảng đẩy bên dưới):
+            //   eH (P44) = khoảng cách VUÔNG GÓC từ tâm bu lông cột cuối tới cạnh ngắn ngoài
+            //   -> đo dọc trục raker là P44 * sqrt(1 + k^2). Raker vuông góc bản đế (k = 0) thì đúng bằng P44.
+            double xLast = xw + _p.BoltToWebEnd + (Math.Max(1, _p.BoltQtyX) - 1) * _p.BoltDistX;   // cột cuối, tại y = 0
+            double xf = xLast + _p.BoltEdgeX * Math.Sqrt(1.0 + k * k);
+            V3 farTop = new V3(xf + k * H, H, z0);
+            V3 farBot = new V3(xf - k * H, -H, z0);
 
             // Giữ nguyên hình dạng bản mã, KHÔNG cắt (yêu cầu người dùng 17/11/2026): đẩy cả tấm dọc trục raker (X,
             // hướng của secondary) ra xa bản đế tới khi góc sâu nhất của cạnh ngắn vừa chạm mặt trên bản đế.
@@ -334,36 +338,62 @@ namespace UEL.Core.Components.RakerTG
                 foreach (double s in new[] { -1.0, 1.0 })
                     push = Math.Max(push, OnPlane(0.0, q.Y, q.Z + s * half).X - q.X);
             V3 shift = new V3(push, 0, 0);
-            Logger.Log(string.Format(CultureInfo.InvariantCulture, "Ban ma: day doc truc raker {0:0.##} mm de canh ngan cham ban de", push));
+            Logger.Log(string.Format(CultureInfo.InvariantCulture, "Ban ma: day canh trong doc truc raker {0:0.##} mm de cham ban de", push));
+            if (Math.Min(farTop.X - (nearTop.X + push), farBot.X - (nearBot.X + push)) <= 1.0)
+            {
+                Logger.Log("Ban ma qua ngan: tang P29/P44 hoac giam goc nghieng.");
+                return null;
+            }
 
+            // chỉ cạnh trong được đẩy; cạnh ngoài giữ theo cột bu lông -> eH luôn đúng
             List<V3> pts = new List<V3>();
-            pts.Add(new V3(xf, H, z0) + shift);
-            pts.Add(new V3(xf, -H, z0) + shift);
+            pts.Add(farTop);
+            pts.Add(farBot);
             pts.Add(nearBot + shift);
             pts.Add(nearTop + shift);
+            Logger.Log(string.Format(CultureInfo.InvariantCulture,
+                "Ban ma: eH = {0:0.##} vuong goc canh ngan ngoai (doc truc raker {1:0.##})", _p.BoltEdgeX, _p.BoltEdgeX * Math.Sqrt(1.0 + k * k)));
+            double skew = Math.Atan2(-_n.Y, _n.X) * 180.0 / Math.PI;
+            if (Math.Abs(skew) > 0.05)
+                Logger.Log(string.Format(CultureInfo.InvariantCulture, "Ban ma: hinh binh hanh, canh ngan nghieng {0:0.##} do so voi phuong vuong goc truc raker", skew));
             return Plate(pts, _p.GussetThk, _p.GussetMat, _p.GussetClass, _p.GussetMark, "PLATE");
         }
 
-        /// FB (thanh lót mối hàn cánh) nằm NGANG, áp vào mặt cánh ở cao độ yFace, thân thanh nằm PHÍA DƯỚI mặt đó
-        /// (17/11/2026, theo ảnh người dùng): dày FlatBarThk theo chiều cao tiết diện (Y);
-        ///   rộng FlatBarWidth dọc trục raker (X), một cạnh chạm mặt trên bản đế; dài b theo bề rộng cánh (Z).
+        /// FB (thanh lót mối hàn cánh) nằm NGANG, áp vào mặt cánh ở cao độ yFace, thân thanh nằm PHÍA DƯỚI mặt đó.
         /// Cánh trên: yFace = mặt trong cánh trên. Cánh dưới: yFace = mặt ngoài cánh dưới.
+        /// Hình dạng (yêu cầu người dùng 17/11/2026): HÌNH CHỮ NHẬT, không cắt theo góc nghiêng:
+        ///   - chạy dọc đường hàn (giao tuyến mặt bản đế với mặt cánh), cạnh dài tì vào mặt bản đế;
+        ///   - dài = bề rộng cánh đo dọc đường hàn + FlatBarExtend (15) mỗi đầu, 2 đầu vuông góc cạnh dài;
+        ///   - rộng FlatBarWidth vuông góc đường hàn (trong mặt cánh), dày FlatBarThk theo Y.
+        ///   Bản đế nghiêng theo Y so với thanh thì đẩy thanh ra vừa đủ để mặt sâu nhất chạm bản đế (không cắm vào).
         private ContourPlate CreateFlatBar(double yFace, double b)
         {
-            double ym = yFace - _up * _p.FlatBarThk / 2.0;     // mặt giữa thanh (thanh ở phía dưới mặt yFace)
             double halfT = _p.FlatBarThk / 2.0;
-            // cạnh tì: lấn vào bản đế rồi cắt theo mặt bản đế; cạnh kia: cách mặt bản đế FlatBarWidth dọc trục raker
-            V3 a = Reach(ym, -b / 2, halfT, 0.0);
-            V3 c = Reach(ym, b / 2, halfT, 0.0);
-            V3 w = new V3(_p.FlatBarWidth, 0, 0);
+            double ym = yFace - _up * halfT;                    // mặt giữa thanh
+            V3 Yv = new V3(0, 1, 0);
+            V3 t = _n.Cross(Yv).Unit();                         // phương đường hàn
+            V3 u = Yv.Cross(t).Unit();                          // vuông góc đường hàn, trong mặt cánh, ra xa bản đế
+            if (u.Dot(_n) < 0) u = u * -1.0;
+            double nu = _n.Dot(u);
+            if (Math.Abs(t.Z) < 1e-3 || nu < 1e-3)
+            {
+                Logger.Log("Khong dung duoc flat bar (ban de gan song song voi canh raker).");
+                return null;
+            }
+            V3 c = OnPlane(0.0, ym, 0.0);                       // trên mặt bản đế, giữa bề rộng cánh
+            double halfL = (b / 2.0) / Math.Abs(t.Z) + _p.FlatBarExtend;
+            double push = halfT * Math.Abs(_n.Y) / nu;          // không cắm vào bản đế khi bản đế nghiêng theo Y
+            V3 a = c + t * -halfL + u * push;
+            V3 d = c + t * halfL + u * push;
+            V3 w = u * _p.FlatBarWidth;
             List<V3> pts = new List<V3>();
             pts.Add(a);
-            pts.Add(c);
-            pts.Add(OnPlane(0.0, ym, b / 2) + w);
-            pts.Add(OnPlane(0.0, ym, -b / 2) + w);
-            ContourPlate fb = Plate(pts, _p.FlatBarThk, _p.FlatBarMat, _p.FlatBarClass, _p.FlatBarMark, "FLAT_BAR");
-            TrimAtBasePlate(fb);
-            return fb;
+            pts.Add(d);
+            pts.Add(d + w);
+            pts.Add(a + w);
+            Logger.Log(string.Format(CultureInfo.InvariantCulture, "Flat bar: dai {0:0.#} (canh {1:0.#} + 2x{2:0.#}), rong {3:0.#}, day {4:0.#}",
+                2 * halfL, 2 * halfL - 2 * _p.FlatBarExtend, _p.FlatBarExtend, _p.FlatBarWidth, _p.FlatBarThk));
+            return Plate(pts, _p.FlatBarThk, _p.FlatBarMat, _p.FlatBarClass, _p.FlatBarMark, "FLAT_BAR");
         }
 
         private void FitRaker(Beam raker, double rootGap)
@@ -439,10 +469,61 @@ namespace UEL.Core.Components.RakerTG
             Cut(raker, pts, tw + 4.0);
         }
 
+        /// Bu lông (17/11/2026, theo người dùng): khi bản mã là hình bình hành (raker nghiêng so với bản đế theo Y),
+        ///   mỗi cột bu lông song song cạnh ngắn của bản mã (lệch theo X một lượng k*y, k = -ny/nx);
+        ///   các hàng đặt theo Y (vuông góc cạnh dài): khoảng cách hàng P43 và mép P45 (eV) luôn đo VUÔNG GÓC cạnh dài.
+        ///   Khoảng cách hàng đo dọc cột nghiêng = P43 / cos(góc) (chỉ bằng P43 khi raker vuông góc bản đế).
+        /// Dùng BoltXYList (toạ độ từng con); đọc lại vị trí sau khi tạo để chắc trục Y của nhóm cùng chiều Y cục bộ.
         private void CreateBolts(Beam raker, ContourPlate gusset, double tw, double webEnd)
         {
             double x0 = webEnd / _n.X + _p.BoltToWebEnd;
-            BoltArray bolts = new BoltArray();
+            double k = -_n.Y / _n.X;
+            int nx = Math.Max(1, _p.BoltQtyX), ny = Math.Max(1, _p.BoltQtyY);
+            List<double> xs = new List<double>(), ys = new List<double>();
+            for (int j = 0; j < ny; j++)
+            {
+                double y = (j - (ny - 1) / 2.0) * _p.BoltDistY;
+                for (int i = 0; i < nx; i++)
+                {
+                    xs.Add(i * _p.BoltDistX + k * y);
+                    ys.Add(y);
+                }
+            }
+            BoltXYList bolts = InsertBolts(raker, gusset, tw, x0, xs, ys, 1.0);
+            if (bolts == null)
+            {
+                Logger.Log("Khong tao duoc nhom bu long.");
+                return;
+            }
+
+            // Trục Y của nhóm bu lông có thể ngược Y cục bộ -> so vị trí thật với vị trí mong muốn; ngược thì tạo lại với -Y.
+            if (Math.Abs(k) > 1e-6 && ny > 1 && bolts.Select())
+            {
+                double errAsIs = 0, errFlip = 0;
+                ArrayList got = bolts.BoltPositions;
+                for (int m = 0; m < xs.Count; m++)
+                {
+                    double ex = x0 + xs[m], ey = ys[m];
+                    errAsIs += Nearest(got, ex, ey);
+                    errFlip += Nearest(got, ex, -ey);
+                }
+                if (errFlip < errAsIs)
+                {
+                    bolts.Delete();
+                    bolts = InsertBolts(raker, gusset, tw, x0, xs, ys, -1.0);
+                    Logger.Log("Bu long: truc Y cua nhom nguoc chieu Y cuc bo -> da tao lai voi Y dao dau.");
+                    if (bolts == null) { Logger.Log("Khong tao lai duoc nhom bu long."); return; }
+                }
+            }
+            _created.Add(bolts);
+            if (Math.Abs(k) > 1e-6)
+                Logger.Log(string.Format(CultureInfo.InvariantCulture,
+                    "Bu long: cot song song canh nghieng ban ma (lech {0:0.##} mm moi 100 mm theo Y); P43/eV do vuong goc canh dai", k * 100));
+        }
+
+        private BoltXYList InsertBolts(Beam raker, ContourPlate gusset, double tw, double x0, List<double> xs, List<double> ys, double ySign)
+        {
+            BoltXYList bolts = new BoltXYList();
             bolts.PartToBoltTo = gusset;
             bolts.PartToBeBolted = raker;
             bolts.FirstPosition = new Point(x0, 0, 0);
@@ -457,13 +538,15 @@ namespace UEL.Core.Components.RakerTG
             bolts.Position.Plane = Position.PlaneEnum.MIDDLE;
             bolts.Position.Rotation = Position.RotationEnum.FRONT;   // thân bu lông theo trục Z cục bộ (xuyên bụng)
             bolts.Bolt = true;
-            bolts.Washer1 = true; bolts.Washer2 = true; bolts.Washer3 = true;
+            // 17/11/2026: bỏ washer thứ nhất (ô đầu tiên của "Include in bolt assembly"), theo ảnh người dùng
+            bolts.Washer1 = false; bolts.Washer2 = true; bolts.Washer3 = true;
             bolts.Nut1 = true; bolts.Nut2 = false;
 
-            if (_p.BoltQtyX <= 1) bolts.AddBoltDistX(0.0);
-            else for (int i = 1; i < _p.BoltQtyX; i++) bolts.AddBoltDistX(_p.BoltDistX);
-            if (_p.BoltQtyY <= 1) bolts.AddBoltDistY(0.0);
-            else for (int i = 1; i < _p.BoltQtyY; i++) bolts.AddBoltDistY(_p.BoltDistY);
+            for (int m = 0; m < xs.Count; m++)
+            {
+                bolts.AddBoltDistX(xs[m]);
+                bolts.AddBoltDistY(ys[m] * ySign);
+            }
 
             if (_p.SlotX > 0 || _p.SlotY > 0)
             {
@@ -474,8 +557,20 @@ namespace UEL.Core.Components.RakerTG
                 bolts.Hole1 = !_gussetPos;
                 bolts.Hole2 = _gussetPos;
             }
-            if (bolts.Insert()) _created.Add(bolts);
-            else Logger.Log("Khong tao duoc nhom bu long.");
+            return bolts.Insert() ? bolts : null;
+        }
+
+        private static double Nearest(ArrayList pts, double x, double y)
+        {
+            double best = double.MaxValue;
+            if (pts == null) return best;
+            foreach (object o in pts)
+            {
+                Point p = o as Point;
+                if (p == null) continue;
+                best = Math.Min(best, Math.Sqrt((p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y)));
+            }
+            return best;
         }
 
         // ----------------------------------------------------------------- mối hàn

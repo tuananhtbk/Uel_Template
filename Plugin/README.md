@@ -218,6 +218,17 @@ Mẫu để mô tả yêu cầu (component mới, sửa component, hình dạng 
 
 Không cần đăng ký ở đâu. Build tự nhận mọi thư mục có `Plugin.cs`.
 
+### Hình minh hoạ trong hộp thoại
+Mẫu là `RAKER+T_GIRDER\_hinh\VeHinh.cs`: một chương trình nhỏ vẽ hình và **sinh luôn phần `.inp`**, nên ô điền nằm đúng chỗ trên hình.
+
+1. Sửa `VeHinh.cs`, rồi chạy lệnh trong đầu file. Kết quả: `bitmaps\*.bmp` và `_hinh\dialog.inp`.
+2. Chép `dialog.inp` vào hằng `UserInterface` trong `Plugin.cs`: nhân đôi dấu `"`, thay tên trong `joint(...)` bằng `""" + PluginName + @"""`.
+3. Chạy `build.bat dev <Ten>`, rồi `install.bat [dev] <bản> <Ten>`. Lệnh cài **tự chép ảnh** vào thư mục ảnh hộp thoại của Tekla, tức phần tử đầu của `DAK_BMPPATH`:
+   - Tekla 18.0: `…\18.0\nt\bitmaps`
+   - Tekla 2019 trở đi: `C:\ProgramData\Trimble\Tekla Structures\<bản>\bitmaps`
+
+Tên ảnh nên có tiền tố riêng (ví dụ `UEL_RAKER_TG_…`) để không trùng ảnh của Tekla. EXE thử nghiệm hiện ảnh lấy từ `Plugin\<Ten>\bitmaps`.
+
 Quy tắc: mọi thứ đi qua ranh giới Core ↔ Plugin/EXE chỉ dùng kiểu của .NET hoặc của Tekla, gồm `Model`, `ModelObject`, `IList`, `IDictionary`, `string`… `Plugin.cs` không được dùng lớp nào trong `Params.cs`, `Builder.cs`, `Component.cs`.
 
 ## 6. Nhiều phiên bản Tekla

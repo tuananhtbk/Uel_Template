@@ -219,9 +219,41 @@ namespace UEL.Tester
             l.Location = new Point(Math.Max(0, field.X - l.PreferredWidth - 6), field.Y + 3);
         }
 
-        /// picture("ten", rong, cao, x, y): file ảnh không có -> chỉ vẽ khung + tên.
+        /// Thư mục tìm ảnh cho picture(...) (TesterForm đặt: Plugin\<Ten>\bitmaps, rồi các thư mục ảnh của Tekla).
+        public static readonly List<string> BitmapDirs = new List<string>();
+
+        private static string FindBitmap(string name)
+        {
+            foreach (string d in BitmapDirs)
+            {
+                if (string.IsNullOrEmpty(d)) continue;
+                foreach (string ext in new[] { ".bmp", ".png", ".jpg", ".gif" })
+                {
+                    string f = System.IO.Path.Combine(d, name + ext);
+                    if (System.IO.File.Exists(f)) return f;
+                }
+            }
+            return null;
+        }
+
+        /// picture("ten", rong, cao, x, y): có file ảnh thì hiện ảnh, không có thì vẽ khung + tên.
         private static Control AddPicture(InpNode n, Control host)
         {
+            string file = FindBitmap(n.Arg(0));
+            if (file != null)
+            {
+                try
+                {
+                    PictureBox pb = new PictureBox();
+                    using (Image img = Image.FromFile(file)) pb.Image = new Bitmap(img);   // không giữ khoá file
+                    pb.SizeMode = PictureBoxSizeMode.Normal;
+                    pb.Size = new Size(Math.Max(n.IntArg(1, pb.Image.Width), 10), Math.Max(n.IntArg(2, pb.Image.Height), 10));
+                    pb.Location = new Point(n.IntArg(3, 0), n.IntArg(4, 0));
+                    host.Controls.Add(pb);
+                    return pb;
+                }
+                catch { }
+            }
             Label p = new Label();
             p.BorderStyle = BorderStyle.FixedSingle;
             p.ForeColor = Color.Gray;

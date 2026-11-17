@@ -25,7 +25,7 @@ namespace UEL.Core.Components.RakerTG
             FlangeWeldGap = 7; WeldAngle = 35;                                                          // giả định
             TopScallop = true; BottScallop = true;
 
-            FlatBarThk = 9; FlatBarWidth = 25; ScallopRadius = 35; FilletSize = 6;                      // chuỗi "25*9" và D66 = P46+35 có trong .uel
+            FlatBarThk = 9; FlatBarWidth = 25; FlatBarExtend = 15; ScallopRadius = 35; FilletSize = 6;                      // chuỗi "25*9" và D66 = P46+35 có trong .uel
         }
 
         // ---------------- Base Plate
@@ -77,6 +77,7 @@ namespace UEL.Core.Components.RakerTG
         // ---------------- Hằng số chưa có trong hộp thoại gốc
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("FB thk")] public double FlatBarThk { get; set; }
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("FB width")] public double FlatBarWidth { get; set; }
+        [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("FB dai them moi dau")] public double FlatBarExtend { get; set; }
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("Scallop R")] public double ScallopRadius { get; set; }
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("Fillet size")] public double FilletSize { get; set; }
 

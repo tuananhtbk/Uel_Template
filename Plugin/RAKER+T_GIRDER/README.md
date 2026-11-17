@@ -50,6 +50,16 @@ Nguồn: `_PHAN_TICH\components\RAKER+T_GIRDER.uel.md` (biến D, công thức, 
 - Biến tính toán của gốc: P14 (góc), P17 (dày cánh), P18, P25, P26, P33, P35, P42, P47–P50. Plugin tự tính các biến này từ hình học.
 - P27, P28, P30, P36, P37 có trong danh sách biến của gốc nhưng không có trong hộp thoại và không dùng trong công thức nào → bỏ qua.
 
+## Theo yêu cầu người dùng (khác hoặc chưa rõ so với bản gốc)
+- **FB:** hình chữ nhật, không cắt theo góc nghiêng. Thanh chạy dọc đường hàn, cạnh dài tì vào bản đế. Dài bằng bề rộng cánh đo dọc đường hàn + 15 mỗi đầu (`FlatBarExtend`). Cánh dưới: FB nằm dưới cánh dưới.
+- **Bản mã:** hình bình hành, cạnh ngắn ngoài song song cạnh ngắn trong (tì bản đế). Không cắt; đẩy dọc trục raker cho chạm bản đế. Mặc định đặt phía trong.
+- **Bu lông:**
+  - Mỗi cột song song cạnh ngắn bản mã.
+  - P43 (Bolt distance y) và P45 (eV) đo **vuông góc cạnh dài** bản mã. Đo dọc cột nghiêng thì khoảng cách = P43 / cos(góc).
+  - Bỏ washer thứ nhất (Washer1).
+- **Vát mép hàn:** mặt trên của cả 2 cánh.
+- **Bản đế:** Top/Bott theo dầm chính, Left/Right theo điểm xa nhất của raker.
+
 ## Giả định
 - FB: tiết diện 25 × 9, cạnh tì **chạm** bản đế. Biến gốc D24/D25/D30/D31 (FLAT_BAR–PLATE = P10) có thể là FB cách bản đế P10; cần ảnh Editor để chắc.
 - Chiều của gap bản đế: dương = rộng ra ngoài mốc.
