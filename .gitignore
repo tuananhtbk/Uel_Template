@@ -1,0 +1,17 @@
+# File sinh ra khi build (tao lai bang Plugin\build.bat)
+Plugin/_obj/
+Plugin/_Dev/
+Plugin/_Dist/
+Plugin/18.0/
+Plugin/2020+/
+*.pdb
+
+# Python
+__pycache__/
+*.pyc
+
+# Ban xuat phien lam viec Claude, file tam
+session-export-*.zip
+*.old
+Thumbs.db
+.vs/

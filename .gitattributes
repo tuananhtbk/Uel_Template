@@ -1,0 +1,10 @@
+# Giu nguyen tung byte moi file: git KHONG doi xuong dong / encoding.
+# Bang tra .txt/.dat la cp949 + TAB + CRLF, component goi chung theo dung noi dung -> khong duoc dong cham.
+* -text
+
+# Nhi phan (khong diff)
+*.uel binary
+*.xls binary
+*.zip binary
+*.dll binary
+*.exe binary

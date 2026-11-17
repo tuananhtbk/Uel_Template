@@ -1,0 +1,1943 @@
+[
+ {
+  "file": "0-DM-LUG+RB-OK-REV1.uel",
+  "size": 20763,
+  "kind": "detail",
+  "name": "0-DM-LUG+RB-OK-REV1",
+  "catalog": "-100\t0-DM-LUG+RB-OK-REV1\tAll",
+  "ui_params": 0,
+  "variables": 31,
+  "dvars": 90,
+  "bound_parts": 7,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "fTpl",
+   "if",
+   "int",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+1.p_0-DM-LUG+RB-OK-REV1",
+   "+82ROFF.p_0-DM-LUG+RB-OK-REV1",
+   "1B.p_0-DM-LUG+RB-OK-REV1",
+   "B2.p_0-DM-LUG+RB-OK-REV1"
+  ]
+ },
+ {
+  "file": "0-PL WELD.uel",
+  "size": 14079,
+  "kind": "detail",
+  "name": "0-PL WELD",
+  "catalog": "-100\t0-PL WELD\tAll",
+  "ui_params": 11,
+  "variables": 15,
+  "dvars": 72,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if",
+   "mid",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#D1.p_0-PL WELD",
+   "#D2.p_0-PL WELD",
+   "#T1.p_0-PL WELD",
+   "#T2.p_0-PL WELD",
+   "0- ngg.p_0-PL WELD",
+   "0-1.p_0-PL WELD",
+   "0-2.p_0-PL WELD",
+   "0-3.p_0-PL WELD",
+   "0-4.p_0-PL WELD",
+   "0-GP 1.p_0-PL WELD",
+   "0-GP 2.p_0-PL WELD",
+   "0-GP 3.p_0-PL WELD",
+   "0-GP 4.p_0-PL WELD",
+   "0-GP 5.p_0-PL WELD",
+   "0-GP 6.p_0-PL WELD",
+   "0-H500_200_10_16 B2F.p_0-PL WELD",
+   "0-K.p_0-PL WELD",
+   "2-45.p_0-PL WELD",
+   "CJP.p_0-PL WELD"
+  ]
+ },
+ {
+  "file": "AIR HOLE YGY.uel",
+  "size": 5090,
+  "kind": "detail",
+  "name": "♥♥♥YGY_WG Air-Hole",
+  "catalog": "-100\t♥♥♥YGY_WG Air-Hole\tAll",
+  "ui_params": 3,
+  "variables": 7,
+  "dvars": 6,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "fTpl",
+   "round"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "AIR HOLE.uel",
+  "size": 8209,
+  "kind": "detail",
+  "name": "0-P-AIR-HOLE",
+  "catalog": "-100\t0-P-AIR-HOLE\tAll",
+  "ui_params": 13,
+  "variables": 26,
+  "dvars": 10,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "BEAM+WALE.uel",
+  "size": 28708,
+  "kind": "joint",
+  "name": "0-DM-BEAM+WALE",
+  "catalog": "-1000\t0-DM-BEAM+WALE\tAll",
+  "ui_params": 0,
+  "variables": 35,
+  "dvars": 156,
+  "bound_parts": 4,
+  "vf_files": [],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#KK.p_0-DM-BEAM+WALE",
+   "+1.p_0-DM-BEAM+WALE",
+   "1.p_0-DM-BEAM+WALE"
+  ]
+ },
+ {
+  "file": "BK+SF CUT.uel",
+  "size": 4078,
+  "kind": "joint",
+  "name": "BK+SF-CUT",
+  "catalog": "-1000\tBK+SF-CUT\tAll|\t1125|A|BK개선",
+  "ui_params": 0,
+  "variables": 0,
+  "dvars": 12,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "BKKKKKKKKK SAME.uel",
+  "size": 20591,
+  "kind": "joint",
+  "name": "♥YGY_BK-SAME",
+  "catalog": "-1000\t♥YGY_BK-SAME\tAll",
+  "ui_params": 6,
+  "variables": 28,
+  "dvars": 111,
+  "bound_parts": 8,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "BT.uel",
+  "size": 6763,
+  "kind": "(no dialog)",
+  "name": null,
+  "catalog": "-10000\tBT\tAll",
+  "ui_params": 0,
+  "variables": 0,
+  "dvars": 0,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "CUT-PL-WALE.uel",
+  "size": 4429,
+  "kind": "joint",
+  "name": "CUT_PL_V2",
+  "catalog": "-1000\tCUT_PL_V2\tAll",
+  "ui_params": 0,
+  "variables": 1,
+  "dvars": 9,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "CUT-WALE.uel",
+  "size": 5780,
+  "kind": "joint",
+  "name": "CUT_WALEEE",
+  "catalog": "-1000\tCUT_WALEEE\tAll",
+  "ui_params": 0,
+  "variables": 4,
+  "dvars": 16,
+  "bound_parts": 1,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "CUTTING.uel",
+  "size": 6660,
+  "kind": "detail",
+  "name": "0-DM-PLATE (BEAM) CUT",
+  "catalog": "-100\t0-DM-PLATE (BEAM) CUT\tAll",
+  "ui_params": 4,
+  "variables": 9,
+  "dvars": 18,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "fTpl",
+   "if",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "1.p_0-DM-PLATE (BEAM) CUT"
+  ]
+ },
+ {
+  "file": "DM-HAU.uel",
+  "size": 32439,
+  "kind": "macro",
+  "name": "0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)",
+  "catalog": "-10\t0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)\tAll",
+  "ui_params": 9,
+  "variables": 40,
+  "dvars": 213,
+  "bound_parts": 5,
+  "vf_files": [
+   "DM-HAUNCH.txt"
+  ],
+  "functions": [
+   "fP",
+   "fTpl",
+   "fVF",
+   "if",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#-1SG1.p_0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)",
+   "0-2BEN 1F.p_0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)",
+   "1DM.p_0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)",
+   "TAPPER.p_0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)"
+  ]
+ },
+ {
+  "file": "H-COL-T_BAR.uel",
+  "size": 21357,
+  "kind": "joint",
+  "name": "CWS-H_COLUMN-T-BAR-1(OK)",
+  "catalog": "-1000\tCWS-H_COLUMN-T-BAR-1(OK)\tAll",
+  "ui_params": 20,
+  "variables": 37,
+  "dvars": 91,
+  "bound_parts": 7,
+  "vf_files": [
+   "CT-BAR-H_COLUMN.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "if",
+   "mid",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#K11.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH250_250_9_14.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH300_300_10_15.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH350_350_12_19.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH400_400.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH414_405.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH440_300.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH458_417_30_50.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH500_200_10_16.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH588_300_12_20.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH596_199_10_15.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH606_201_12_20.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "#KKH612_202_13_23.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "0- K 0K.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "0-0000.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "0-91111111111.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "0-H300x300x10x15.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "0-H350x350x12x19.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "0-H582x300x12x17.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "1.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "111-OK.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "CT.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "H200_200_8_12.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "H350_175_7_11.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "H600_200_11_17.p_CWS-H_COLUMN-T-BAR-1(OK)",
+   "TB.p_CWS-H_COLUMN-T-BAR-1(OK)"
+  ]
+ },
+ {
+  "file": "PL+FILLER.uel",
+  "size": 3749,
+  "kind": "detail",
+  "name": "PL+FILLER",
+  "catalog": "-100\tPL+FILLER\tAll",
+  "ui_params": 1,
+  "variables": 3,
+  "dvars": 4,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "RAKER+TG.uel",
+  "size": 33571,
+  "kind": "joint",
+  "name": "0-RAKER+TG",
+  "catalog": "-1000\t0-RAKER+TG\tAll",
+  "ui_params": 0,
+  "variables": 52,
+  "dvars": 156,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "if",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#KRAC.p_0-RAKER+TG",
+   "+B2-104.p_0-RAKER+TG",
+   "+B4-104.p_0-RAKER+TG",
+   "+B7-104-TSB0.p_0-RAKER+TG",
+   "+B7-104.p_0-RAKER+TG",
+   "0-H350x357x19x19.p_0-RAKER+TG",
+   "1.p_0-RAKER+TG",
+   "H350_357_19_19.p_0-RAKER+TG",
+   "KK#1234.p_0-RAKER+TG",
+   "KK111.p_0-RAKER+TG",
+   "KK250.p_0-RAKER+TG",
+   "KK350.p_0-RAKER+TG",
+   "KKKH350_357_19_19.p_0-RAKER+TG"
+  ]
+ },
+ {
+  "file": "RAKER+T_GIRDER.uel",
+  "size": 33219,
+  "kind": "joint",
+  "name": "0-RAKER+TG",
+  "catalog": "-1000\t0-RAKER+TG\tAll",
+  "ui_params": 0,
+  "variables": 52,
+  "dvars": 156,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "if",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#KRAC.p_0-RAKER+TG",
+   "0-H350x357x19x19.p_0-RAKER+TG",
+   "1.p_0-RAKER+TG",
+   "H350_357_19_19.p_0-RAKER+TG",
+   "KK#1234.p_0-RAKER+TG",
+   "KK111.p_0-RAKER+TG",
+   "KK250.p_0-RAKER+TG",
+   "KK350.p_0-RAKER+TG",
+   "KKKH350_357_19_19.p_0-RAKER+TG"
+  ]
+ },
+ {
+  "file": "RING PLATE.uel",
+  "size": 41755,
+  "kind": "joint",
+  "name": "0-RING PL",
+  "catalog": "-1000\t0-RING PL\tAll",
+  "ui_params": 0,
+  "variables": 62,
+  "dvars": 264,
+  "bound_parts": 22,
+  "vf_files": [
+   "DM-1F-RING+WING.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#1F-D.p_0-RING PL",
+   "+1.p_0-RING PL",
+   "0-111111111111111.p_0-RING PL",
+   "0-B1 H700_300.p_0-RING PL",
+   "0-T+4.p_0-RING PL"
+  ]
+ },
+ {
+  "file": "RING-PL.uel",
+  "size": 41740,
+  "kind": "joint",
+  "name": "0-RING PL",
+  "catalog": "-1000\t0-RING PL\tAll",
+  "ui_params": 0,
+  "variables": 62,
+  "dvars": 264,
+  "bound_parts": 22,
+  "vf_files": [
+   "DM-1F-RING+WING.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#123.p_0-RING PL",
+   "#1F-D.p_0-RING PL",
+   "#R.p_0-RING PL",
+   "#R1.p_0-RING PL",
+   "#R2.p_0-RING PL",
+   "+1.p_0-RING PL",
+   "0-111111111111111.p_0-RING PL",
+   "0-B1 H700_300.p_0-RING PL",
+   "0-T+4.p_0-RING PL",
+   "1.p_0-RING PL"
+  ]
+ },
+ {
+  "file": "STUD H-COL.uel",
+  "size": 11083,
+  "kind": "detail",
+  "name": "0-P-STUD-(FLG+WEB)-1",
+  "catalog": "-100\t0-P-STUD-(FLG+WEB)-1\tAll",
+  "ui_params": 22,
+  "variables": 26,
+  "dvars": 20,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#KK1.p_0-P-STUD-(FLG+WEB)-1",
+   "#KKBEAM.p_0-P-STUD-(FLG+WEB)-1",
+   "1.p_0-P-STUD-(FLG+WEB)-1",
+   "BEAM.p_0-P-STUD-(FLG+WEB)-1",
+   "KK.p_0-P-STUD-(FLG+WEB)-1"
+  ]
+ },
+ {
+  "file": "STUD WALL.uel",
+  "size": 4903,
+  "kind": "detail",
+  "name": "0-P-STUD(WALL)",
+  "catalog": "-100\t0-P-STUD(WALL)\tAll",
+  "ui_params": 7,
+  "variables": 7,
+  "dvars": 10,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "STUD-ACT.uel",
+  "size": 12491,
+  "kind": "detail",
+  "name": "0-P-STUD-(FLG+WEB)-2",
+  "catalog": "-100\t0-P-STUD-(FLG+WEB)-2\tAll|\tACT-COL",
+  "ui_params": 22,
+  "variables": 26,
+  "dvars": 20,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#10K.p_0-P-STUD-(FLG+WEB)-2",
+   "#11K.p_0-P-STUD-(FLG+WEB)-2",
+   "#12K.p_0-P-STUD-(FLG+WEB)-2",
+   "#14K.p_0-P-STUD-(FLG+WEB)-2",
+   "#8K.p_0-P-STUD-(FLG+WEB)-2",
+   "#9K.p_0-P-STUD-(FLG+WEB)-2",
+   "+LAM.p_0-P-STUD-(FLG+WEB)-2",
+   "1.p_0-P-STUD-(FLG+WEB)-2",
+   "1N2W.p_0-P-STUD-(FLG+WEB)-2",
+   "2.p_0-P-STUD-(FLG+WEB)-2",
+   "3-200-2.p_0-P-STUD-(FLG+WEB)-2",
+   "3-200.p_0-P-STUD-(FLG+WEB)-2",
+   "300.p_0-P-STUD-(FLG+WEB)-2",
+   "4-150-2.p_0-P-STUD-(FLG+WEB)-2",
+   "4-150.p_0-P-STUD-(FLG+WEB)-2",
+   "4-200-2.p_0-P-STUD-(FLG+WEB)-2",
+   "4-200.p_0-P-STUD-(FLG+WEB)-2",
+   "600.p_0-P-STUD-(FLG+WEB)-2",
+   "7-100.p_0-P-STUD-(FLG+WEB)-2",
+   "7-150-2.p_0-P-STUD-(FLG+WEB)-2",
+   "7-150.p_0-P-STUD-(FLG+WEB)-2",
+   "A-1.p_0-P-STUD-(FLG+WEB)-2",
+   "A-2.p_0-P-STUD-(FLG+WEB)-2",
+   "KK.p_0-P-STUD-(FLG+WEB)-2"
+  ]
+ },
+ {
+  "file": "STUD4SIDES.uel",
+  "size": 5666,
+  "kind": "detail",
+  "name": "0-STUD-4SIDES",
+  "catalog": "-100\t0-STUD-4SIDES\tAll",
+  "ui_params": 0,
+  "variables": 0,
+  "dvars": 24,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "TJ.uel",
+  "size": 9636,
+  "kind": "detail",
+  "name": "TJ_WeldPrep_Scallop",
+  "catalog": "-100\tTJ_WeldPrep_Scallop\tAll",
+  "ui_params": 3,
+  "variables": 8,
+  "dvars": 0,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 4,
+  "presets": [
+   "0-R35.p_TJ_WeldPrep_Scallop",
+   "0IL-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0JOY-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0Plus-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0일흥-스칼렙.p_TJ_WeldPrep_Scallop",
+   "1.p_TJ_WeldPrep_Scallop",
+   "30.p_TJ_WeldPrep_Scallop",
+   "35.p_TJ_WeldPrep_Scallop",
+   "45.p_TJ_WeldPrep_Scallop",
+   "R40.p_TJ_WeldPrep_Scallop",
+   "STD.p_TJ_WeldPrep_Scallop"
+  ]
+ },
+ {
+  "file": "T_BAR SF.uel",
+  "size": 15432,
+  "kind": "detail",
+  "name": "0-DM-T_BAR+SF",
+  "catalog": "-100\t0-DM-T_BAR+SF\tAll\r\n-10000\tBT\tAll",
+  "ui_params": 14,
+  "variables": 14,
+  "dvars": 24,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+SFFF.p_0-DM-T_BAR+SF",
+   "0-SF.p_0-DM-T_BAR+SF"
+  ]
+ },
+ {
+  "file": "T_BAR+SF.uel",
+  "size": 15291,
+  "kind": "detail",
+  "name": "0-DM-T_BAR+SF",
+  "catalog": "-100\t0-DM-T_BAR+SF\tAll\r\n-10000\tBT\tAll",
+  "ui_params": 14,
+  "variables": 14,
+  "dvars": 24,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "0-SF.p_0-DM-T_BAR+SF"
+  ]
+ },
+ {
+  "file": "WALE+T_GIRDER.uel",
+  "size": 43164,
+  "kind": "joint",
+  "name": "0-DM-WALE+T_GIRDER",
+  "catalog": "-1000\t0-DM-WALE+T_GIRDER\tAll",
+  "ui_params": 0,
+  "variables": 52,
+  "dvars": 267,
+  "bound_parts": 11,
+  "vf_files": [],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "if",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#KK.p_0-DM-WALE+T_GIRDER",
+   "#KK1.p_0-DM-WALE+T_GIRDER",
+   "0-H582.p_0-DM-WALE+T_GIRDER",
+   "00-H300x300x10x15.p_0-DM-WALE+T_GIRDER",
+   "00-H350x350x12x19.p_0-DM-WALE+T_GIRDER",
+   "1.p_0-DM-WALE+T_GIRDER",
+   "2.p_0-DM-WALE+T_GIRDER",
+   "BH1200.p_0-DM-WALE+T_GIRDER"
+  ]
+ },
+ {
+  "file": "YGY-HAUNCH-MOMENT-TANG AM.uel",
+  "size": 29774,
+  "kind": "joint",
+  "name": "♥♥♥YGY_HAUNCH_Moment-TANG AM",
+  "catalog": "-1000\t♥♥♥YGY_HAUNCH_Moment-TANG AM\tAll",
+  "ui_params": 16,
+  "variables": 46,
+  "dvars": 137,
+  "bound_parts": 6,
+  "vf_files": [
+   "YGY-HAUNCH_Moment-미운용층.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "-3SG4A.p_♥♥♥YGY_HAUNCH_Moment-TANG AM"
+  ]
+ },
+ {
+  "file": "YGY-R1.uel",
+  "size": 109368,
+  "kind": "joint",
+  "name": "★YGY_꺽보-R1_nopw",
+  "catalog": "-1000\t★YGY_꺽보-R1\tAll\r\n-100\tDBS-사재_CUT_T\tAll\r\n-100\tTJ_WeldPrep_Flg_V\tAll|\t뾫먝둎먩\r\nTHUMBNAIL\tY:\\02-EDIT\\05-JOY ENG\\240513 Tongbok District 2 in Pyeongtaek City\\202308-Tongbok District 2 in Pyeongtaek City-floor\\attributes\\TJ_WeldPrep_Flg_V_thm.bmp\r\n-100\tDBS-사재_CUT_B\tAll\r\n-100\tTJ_WeldPrep_Scallop\tAll|\t긚긇깋긞긵\r\nTHUMBNAIL\tE:\\모델 백업\\2015년\\한진중공업\\43-1구역 COL. LUG 부착 모델\\제2여객터미널 골조공사43-1 구역\\attributes\\TJ_WeldPrep_Scallop_thm.bmp\r\n-100\tWeldBar_H\tAll|\t뿞뱰띫\r\nTHUMBNAIL\tWeldBar_H_thm.bmp",
+  "ui_params": 9,
+  "variables": 146,
+  "dvars": 246,
+  "bound_parts": 38,
+  "vf_files": [],
+  "functions": [
+   "cos",
+   "fP",
+   "fTpl",
+   "if",
+   "round",
+   "tan"
+  ],
+  "bitmaps": 8,
+  "presets": [
+   "0JOY-공장개선.p_TJ_WeldPrep_Flg_V",
+   "0JOY-현장개선.p_TJ_WeldPrep_Flg_V",
+   "0Plus-공장개선.p_TJ_WeldPrep_Flg_V",
+   "0Plus-현장개선.p_TJ_WeldPrep_Flg_V",
+   "0일흥-공장개선.p_TJ_WeldPrep_Flg_V",
+   "0일흥-현장개선.p_TJ_WeldPrep_Flg_V",
+   "LFLG_ONLY.p_TJ_WeldPrep_Flg_V",
+   "SSSSS.p_TJ_WeldPrep_Flg_V",
+   "STD.p_TJ_WeldPrep_Flg_V",
+   "0IL-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0JOY-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0Plus-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0일흥-스칼렙.p_TJ_WeldPrep_Scallop",
+   "1.p_TJ_WeldPrep_Scallop",
+   "30.p_TJ_WeldPrep_Scallop",
+   "35.p_TJ_WeldPrep_Scallop",
+   "45.p_TJ_WeldPrep_Scallop",
+   "R40.p_TJ_WeldPrep_Scallop",
+   "STD.p_TJ_WeldPrep_Scallop",
+   "#CFB.p_WeldBar_H",
+   "00YGY-공장-FB_1F.p_WeldBar_H",
+   "00YGY-공장-FB_B1.p_WeldBar_H",
+   "00YGY-공장-FB_B2.p_WeldBar_H",
+   "00YGY-공장-FB_B3.p_WeldBar_H",
+   "00YGY-공장-FB_B4.p_WeldBar_H",
+   "00YGY-공장-FB_B5.p_WeldBar_H",
+   "00YGY-현장-FB_1F.p_WeldBar_H",
+   "00YGY-현장-FB_B1.p_WeldBar_H",
+   "00YGY-현장-FB_B2.p_WeldBar_H",
+   "00YGY-현장-FB_B3.p_WeldBar_H",
+   "00YGY-현장-FB_B4.p_WeldBar_H",
+   "00YGY-현장-FB_B5.p_WeldBar_H",
+   "0JOY-공장-B1.p_WeldBar_H",
+   "0JOY-공장-B2.p_WeldBar_H",
+   "0JOY-공장-B3.p_WeldBar_H",
+   "0JOY-공장-B4.p_WeldBar_H",
+   "0JOY-공장-B5.p_WeldBar_H",
+   "0JOY-공장-B6.p_WeldBar_H",
+   "0JOY-공장-B7.p_WeldBar_H",
+   "0JOY-공장-F1.p_WeldBar_H",
+   "0JOY-공장백바-GB1.p_WeldBar_H",
+   "0JOY-공장백바-SB1.p_WeldBar_H",
+   "0JOY-공장백바.p_WeldBar_H",
+   "0JOY-현장-B1.p_WeldBar_H",
+   "0JOY-현장-B2.p_WeldBar_H",
+   "0JOY-현장-B3.p_WeldBar_H",
+   "0JOY-현장-B4.p_WeldBar_H",
+   "0JOY-현장-B5.p_WeldBar_H",
+   "0JOY-현장-B6.p_WeldBar_H",
+   "0JOY-현장-B7.p_WeldBar_H",
+   "0JOY-현장-B8.p_WeldBar_H",
+   "0JOY-현장-F1.p_WeldBar_H",
+   "0JOY-현장백바-G1.p_WeldBar_H",
+   "0JOY-현장백바-S1.p_WeldBar_H",
+   "0JOY-현장백바.p_WeldBar_H",
+   "0Plus-공장백바.p_WeldBar_H",
+   "0Plus-현장백바.p_WeldBar_H",
+   "0통북-1F.p_WeldBar_H",
+   "1-1FB.p_WeldBar_H",
+   "1-B3FB.p_WeldBar_H",
+   "1-B4FB.p_WeldBar_H",
+   "1-B5FB.p_WeldBar_H",
+   "1-B6FB.p_WeldBar_H",
+   "1-B7FB.p_WeldBar_H",
+   "1-B8FB.p_WeldBar_H",
+   "1A-FB.p_WeldBar_H",
+   "1B-FB.p_WeldBar_H",
+   "1C-FB.p_WeldBar_H",
+   "1F.p_WeldBar_H",
+   "1FB.p_WeldBar_H",
+   "1FBL.p_WeldBar_H",
+   "1F_SITE.p_WeldBar_H",
+   "2-1FB.p_WeldBar_H",
+   "2-B3FB.p_WeldBar_H",
+   "2-B4FB.p_WeldBar_H",
+   "2-B5FB.p_WeldBar_H",
+   "2-B6FB.p_WeldBar_H",
+   "2-B7FB.p_WeldBar_H",
+   "2-B8FB.p_WeldBar_H",
+   "2FB.p_WeldBar_H",
+   "3-1FB.p_WeldBar_H",
+   "3-B3FB.p_WeldBar_H",
+   "3-B4FB.p_WeldBar_H",
+   "3-B5FB.p_WeldBar_H",
+   "3-B6FB.p_WeldBar_H",
+   "3-B7FB.p_WeldBar_H",
+   "3-B8FB.p_WeldBar_H",
+   "4-1FB.p_WeldBar_H",
+   "4-B7FB.p_WeldBar_H",
+   "4-B8FB.p_WeldBar_H",
+   "A-B1FB.p_WeldBar_H",
+   "A-B2FB.p_WeldBar_H",
+   "A-B3FB.p_WeldBar_H",
+   "A-B4FB.p_WeldBar_H",
+   "A-B5FB.p_WeldBar_H",
+   "B-B1FB.p_WeldBar_H",
+   "B-B2FB.p_WeldBar_H",
+   "B-B2RFB.p_WeldBar_H",
+   "B-B3FB.p_WeldBar_H",
+   "B-B4FB.p_WeldBar_H",
+   "B-B5FB.p_WeldBar_H",
+   "B1A-FB.p_WeldBar_H",
+   "B1B-FB.p_WeldBar_H",
+   "B1C-FB.p_WeldBar_H",
+   "B1FB.p_WeldBar_H",
+   "B1FBL.p_WeldBar_H",
+   "B2FBL.p_WeldBar_H",
+   "B3FBL.p_WeldBar_H",
+   "B4FBL.p_WeldBar_H",
+   "b5.p_WeldBar_H",
+   "C-B1FB.p_WeldBar_H",
+   "FB-COL-TO-GIR.p_WeldBar_H",
+   "FB.p_WeldBar_H",
+   "standard.p_WeldBar_H",
+   "TC-FB.p_WeldBar_H"
+  ]
+ },
+ {
+  "file": "Z_BEAM.uel",
+  "size": 12249,
+  "kind": "joint",
+  "name": "0-DM-Z_BEAM",
+  "catalog": "-1000\t0-DM-Z_BEAM\tAll",
+  "ui_params": 10,
+  "variables": 15,
+  "dvars": 41,
+  "bound_parts": 4,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "fTpl",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "0-Z BEAM 87.p_0-DM-Z_BEAM",
+   "0-Z BEAM.p_0-DM-Z_BEAM"
+  ]
+ },
+ {
+  "file": "1066666666\\BEAM DOUBLE SHEAR.uel",
+  "size": 15390,
+  "kind": "joint",
+  "name": "BEAM-DOUBLE-H",
+  "catalog": "-1000\tBEAM-DOUBLE-H\tAll",
+  "ui_params": 2,
+  "variables": 20,
+  "dvars": 63,
+  "bound_parts": 4,
+  "vf_files": [
+   "BEAM-2.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "if",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "1066666666\\BEAM-GIRDER.uel",
+  "size": 23391,
+  "kind": "joint",
+  "name": "00-BEAM-GIRDER",
+  "catalog": "-1000\t00-BEAM-GIRDER\tAll\r\n-1000\tBEAM-DOUBLE-H\tAll",
+  "ui_params": 0,
+  "variables": 22,
+  "dvars": 126,
+  "bound_parts": 8,
+  "vf_files": [
+   "BEAM-2.txt",
+   "BEAM.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "if",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "1066666666\\IB-H588-PLATE.uel",
+  "size": 4412,
+  "kind": "joint",
+  "name": "IB-H588-PLATE",
+  "catalog": "-1000\tIB-H588-PLATE\tAll",
+  "ui_params": 0,
+  "variables": 0,
+  "dvars": 0,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "240103\\BE COL.uel",
+  "size": 17710,
+  "kind": "joint",
+  "name": "♥YGY_접합용 COL-FLG보강",
+  "catalog": "-1000\t♥YGY_접합용 COL-FLG보강\tAll\r\n-10000\tBH\tAll",
+  "ui_params": 4,
+  "variables": 6,
+  "dvars": 33,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "240103\\CJP_FB_3SIDES.uel",
+  "size": 16003,
+  "kind": "detail",
+  "name": "mk_PLATE개선_(CJP_FB)_3SIDE",
+  "catalog": "-100\tmk_PLATE개선_(CJP_FB)_3SIDE\tAll",
+  "ui_params": 5,
+  "variables": 27,
+  "dvars": 0,
+  "bound_parts": 6,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if",
+   "max",
+   "mid",
+   "min",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "240103\\CSF TO CGP.uel",
+  "size": 8160,
+  "kind": "joint",
+  "name": "YGY_(개선)-CSFtoCGP",
+  "catalog": "-1000\tYGY_(개선)-CSFtoCGP\tAll",
+  "ui_params": 28,
+  "variables": 0,
+  "dvars": 36,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "240103\\CSF TO CGP_A.uel",
+  "size": 7827,
+  "kind": "joint",
+  "name": "YGY_(개선)-CSFtoCGP_A",
+  "catalog": "-1000\tYGY_(개선)-CSFtoCGP_A\tAll",
+  "ui_params": 28,
+  "variables": 0,
+  "dvars": 36,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "B-TO-TG\\PIN-MOMENT.uel",
+  "size": 40204,
+  "kind": "joint",
+  "name": "0-DM-PIN MOMENT-V2",
+  "catalog": "-1000\t0-DM-PIN MOMENT-V2\tAll",
+  "ui_params": 0,
+  "variables": 104,
+  "dvars": 156,
+  "bound_parts": 7,
+  "vf_files": [
+   "BEAM_TO_TG.txt"
+  ],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "fVF",
+   "if",
+   "mid",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+000.p_0-DM-PIN MOMENT-V2",
+   "+104.p_0-DM-PIN MOMENT-V2",
+   "+94 B3.p_0-DM-PIN MOMENT-V2",
+   "+AKC.p_0-DM-PIN MOMENT-V2",
+   "+SAMPLE.p_0-DM-PIN MOMENT-V2",
+   "B1104.p_0-DM-PIN MOMENT-V2"
+  ]
+ },
+ {
+  "file": "COL TO GIRDER\\0-DM-S-COL TO GIR.uel",
+  "size": 39271,
+  "kind": "joint",
+  "name": "0-DM_S-Col2Gir",
+  "catalog": "-1000\t0-DM_S-Col2Gir\tAll|\tTANG AM",
+  "ui_params": 30,
+  "variables": 76,
+  "dvars": 197,
+  "bound_parts": 7,
+  "vf_files": [
+   "YGY-S_COL2GIR-운용층.txt"
+  ],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "fVF",
+   "if",
+   "max",
+   "mid",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+B5.p_0-DM_S-Col2Gir"
+  ]
+ },
+ {
+  "file": "COL-GIRDER-P-BOX\\YGY-S_COL2GIR-운용층-TANG_DUONG.uel",
+  "size": 39457,
+  "kind": "joint",
+  "name": "0-DM_S-Col2Gir_TANG_DUONG",
+  "catalog": "-1000\t0-DM_S-Col2Gir_TANG_DUONG\tAll",
+  "ui_params": 31,
+  "variables": 76,
+  "dvars": 197,
+  "bound_parts": 7,
+  "vf_files": [
+   "YGY-S_COL2GIR-운용층-TANG_DUONG.txt"
+  ],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "fVF",
+   "if",
+   "max",
+   "mid",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+101-B4.p_0-DM_S-Col2Gir_TANG_DUONG",
+   "28-180.p_0-DM_S-Col2Gir_TANG_DUONG"
+  ]
+ },
+ {
+  "file": "COL-HUN-PBOX\\YGY-HAUNCH_Moment.uel",
+  "size": 30773,
+  "kind": "joint",
+  "name": "♥♥♥YGY_HAUNCH_Moment",
+  "catalog": "-1000\t♥♥♥YGY_HAUNCH_Moment\tAll",
+  "ui_params": 16,
+  "variables": 48,
+  "dvars": 137,
+  "bound_parts": 6,
+  "vf_files": [
+   "YGY-HAUNCH_Moment.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "if",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#1.p_♥♥♥YGY_HAUNCH_Moment",
+   "#11.p_♥♥♥YGY_HAUNCH_Moment",
+   "0-창원 (SLOT).p_♥♥♥YGY_HAUNCH_Moment",
+   "0-창원 (정홀).p_♥♥♥YGY_HAUNCH_Moment",
+   "0창원-1F.p_♥♥♥YGY_HAUNCH_Moment",
+   "0창원.p_♥♥♥YGY_HAUNCH_Moment",
+   "1.p_♥♥♥YGY_HAUNCH_Moment",
+   "444.p_♥♥♥YGY_HAUNCH_Moment"
+  ]
+ },
+ {
+  "file": "H-COL-GIRDER\\H-COL.uel",
+  "size": 29842,
+  "kind": "joint",
+  "name": "0-DM_H-Col2Gir_H-COLUMN",
+  "catalog": "-1000\t0-DM_H-Col2Gir_H-COLUMN\tAll",
+  "ui_params": 13,
+  "variables": 75,
+  "dvars": 135,
+  "bound_parts": 3,
+  "vf_files": [
+   "YGY-H_COL2GIR-운용층-H-COL.txt"
+  ],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "fVF",
+   "if",
+   "max",
+   "mid",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "HAUNCH\\HAUCH.uel",
+  "size": 32267,
+  "kind": "macro",
+  "name": "0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)",
+  "catalog": "-10\t0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)\tAll",
+  "ui_params": 9,
+  "variables": 40,
+  "dvars": 213,
+  "bound_parts": 5,
+  "vf_files": [
+   "DM-HAUNCH.txt"
+  ],
+  "functions": [
+   "fP",
+   "fTpl",
+   "fVF",
+   "if",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#-1SG1.p_0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)",
+   "0-2BEN 1F.p_0-DM-HAUNCH-BEAM2 (FLG+WEB-CJP)"
+  ]
+ },
+ {
+  "file": "HAUNCH\\YGY HAUNCH.uel",
+  "size": 30033,
+  "kind": "joint",
+  "name": "♥♥♥YGY_HAUNCH_Moment",
+  "catalog": "-1000\t♥♥♥YGY_HAUNCH_Moment\tAll",
+  "ui_params": 15,
+  "variables": 46,
+  "dvars": 137,
+  "bound_parts": 6,
+  "vf_files": [
+   "YGY-HAUNCH_Moment.txt"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "#1.p_♥♥♥YGY_HAUNCH_Moment",
+   "0-창원 (SLOT).p_♥♥♥YGY_HAUNCH_Moment",
+   "0-창원 (정홀).p_♥♥♥YGY_HAUNCH_Moment",
+   "0창원-1F.p_♥♥♥YGY_HAUNCH_Moment",
+   "0창원.p_♥♥♥YGY_HAUNCH_Moment",
+   "1.p_♥♥♥YGY_HAUNCH_Moment",
+   "444.p_♥♥♥YGY_HAUNCH_Moment"
+  ]
+ },
+ {
+  "file": "JP11\\01-SHEAR-JP11(DM).uel",
+  "size": 17572,
+  "kind": "joint",
+  "name": "01-Shear-JP11(DM)",
+  "catalog": "-1000\t01-Shear-JP11(DM)\tAll",
+  "ui_params": 7,
+  "variables": 66,
+  "dvars": 24,
+  "bound_parts": 0,
+  "vf_files": [
+   "Shear-JP11-SM355.dat",
+   "Shear-JP11-SS275.dat"
+  ],
+  "functions": [
+   "fP",
+   "fVF",
+   "if",
+   "mid"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "STD.p_01-Shear-JP11(DM)"
+  ]
+ },
+ {
+  "file": "NEC\\CUSTOM_STEP.uel",
+  "size": 40489,
+  "kind": "joint",
+  "name": "CustomStep_v2",
+  "catalog": "-1000\tCustomStep_v2\tAll",
+  "ui_params": 11,
+  "variables": 40,
+  "dvars": 82,
+  "bound_parts": 3,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 7,
+  "presets": []
+ },
+ {
+  "file": "NEC\\HANDRAIL_SPLICE.uel",
+  "size": 15164,
+  "kind": "joint",
+  "name": "Rail Splice",
+  "catalog": "-1000\tHandrail Splice\tAll",
+  "ui_params": 2,
+  "variables": 30,
+  "dvars": 4,
+  "bound_parts": 1,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 4,
+  "presets": []
+ },
+ {
+  "file": "NEC\\NEC_AUTO_SF.uel",
+  "size": 156904,
+  "kind": "joint",
+  "name": "NEC_COLUMN_STIFFENERS",
+  "catalog": "-1000\tNEC_AUTO_STIFFENERS\tAll",
+  "ui_params": 8,
+  "variables": 142,
+  "dvars": 454,
+  "bound_parts": 38,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if",
+   "max"
+  ],
+  "bitmaps": 9,
+  "presets": [
+   "standard.p_NEC_AUTO_STIFFENERS",
+   "standard.p_NEC_AUTO_STIFFENERS"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_BASEPLATE.uel",
+  "size": 131891,
+  "kind": "detail",
+  "name": "NEC_BASEPLATE",
+  "catalog": "-100\tNEC_BASEPLATE\tAll",
+  "ui_params": 21,
+  "variables": 43,
+  "dvars": 230,
+  "bound_parts": 16,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 23,
+  "presets": [
+   "standard.p_NEC_BASEPLATE",
+   "standard.p_NEC_BASEPLATE"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_EMBED.uel",
+  "size": 81298,
+  "kind": "detail",
+  "name": "NEC_EMBED",
+  "catalog": "-100\tNEC_EMBED\tAll",
+  "ui_params": 2,
+  "variables": 91,
+  "dvars": 82,
+  "bound_parts": 5,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if",
+   "int",
+   "mid"
+  ],
+  "bitmaps": 9,
+  "presets": [
+   "H294.p_NEC_EMBED",
+   "H900_300.p_NEC_EMBED",
+   "H294.p_NEC_EMBED",
+   "H900_300.p_NEC_EMBED",
+   "standard.p_NEC_EMBED"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_EQUIP_DET1.uel",
+  "size": 65595,
+  "kind": "detail",
+  "name": "NEC_EQUIP_Det1",
+  "catalog": "-100\tNEC_EQUIP_Det1\tAll",
+  "ui_params": 0,
+  "variables": 69,
+  "dvars": 22,
+  "bound_parts": 17,
+  "vf_files": [],
+  "functions": [
+   "if"
+  ],
+  "bitmaps": 6,
+  "presets": [
+   "standard.p_NEC_EQUIP_Det1",
+   "standard.p_NEC_EQUIP_Det1"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_GIRDER.uel",
+  "size": 29571,
+  "kind": "macro",
+  "name": "NEC_GIRDER",
+  "catalog": "-10\tNEC_GIRDER\tAll",
+  "ui_params": 5,
+  "variables": 22,
+  "dvars": 6,
+  "bound_parts": 3,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 2,
+  "presets": [
+   "standard.p_NEC_GIRDER",
+   "standard.p_NEC_GIRDER"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_HAUNCH.uel",
+  "size": 73110,
+  "kind": "detail",
+  "name": "NEC_HAUNCH",
+  "catalog": "-100\tNEC_HAUNCH\tAll",
+  "ui_params": 3,
+  "variables": 63,
+  "dvars": 50,
+  "bound_parts": 12,
+  "vf_files": [],
+  "functions": [
+   "if"
+  ],
+  "bitmaps": 9,
+  "presets": [
+   "standard.p_NEC_HAUNCH",
+   "standard.p_NEC_HAUNCH"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_OPEN.uel",
+  "size": 66484,
+  "kind": "detail",
+  "name": "NEC_OPEN",
+  "catalog": "-100\tNEC_OPEN\tAll",
+  "ui_params": 1,
+  "variables": 30,
+  "dvars": 228,
+  "bound_parts": 20,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if"
+  ],
+  "bitmaps": 3,
+  "presets": [
+   "standard.p_NEC_OPEN",
+   "standard.p_NEC_OPEN"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_PIPE_COL1.uel",
+  "size": 60626,
+  "kind": "joint",
+  "name": "NEC_PIPE_COLUMN1",
+  "catalog": "-1000\tNEC_PIPE_COLUMN1\tAll",
+  "ui_params": 4,
+  "variables": 23,
+  "dvars": 46,
+  "bound_parts": 5,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "mid"
+  ],
+  "bitmaps": 4,
+  "presets": [
+   "standard.p_NEC_PIPE_COLUMN1",
+   "standard.p_NEC_PIPE_COLUMN1"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_PIPE_COL2.uel",
+  "size": 57614,
+  "kind": "joint",
+  "name": "NEC_PIPE_COLUMN2",
+  "catalog": "-1000\tNEC_PIPE_COLUMN2\tAll",
+  "ui_params": 7,
+  "variables": 23,
+  "dvars": 27,
+  "bound_parts": 3,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "mid"
+  ],
+  "bitmaps": 6,
+  "presets": [
+   "standard.p_NEC_PIPE_COLUMN2",
+   "standard.p_NEC_PIPE_COLUMN2"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_POST.uel",
+  "size": 50836,
+  "kind": "joint",
+  "name": "NEC_POST",
+  "catalog": "-1000\tNEC_POST\tAll",
+  "ui_params": 3,
+  "variables": 31,
+  "dvars": 23,
+  "bound_parts": 8,
+  "vf_files": [],
+  "functions": [
+   "fMarketSize",
+   "fP",
+   "if",
+   "int"
+  ],
+  "bitmaps": 5,
+  "presets": [
+   "standard.p_NEC_POST",
+   "standard.p_NEC_POST"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_SF_C.uel",
+  "size": 55602,
+  "kind": "detail",
+  "name": "NEC_STIFFENER_C",
+  "catalog": "-100\tNEC_STIFFENER_C\tAll",
+  "ui_params": 0,
+  "variables": 42,
+  "dvars": 22,
+  "bound_parts": 4,
+  "vf_files": [],
+  "functions": [
+   "fMarketSize",
+   "fP",
+   "if"
+  ],
+  "bitmaps": 6,
+  "presets": [
+   "standard.p_NEC_STIFFENER_C",
+   "standard.p_NEC_STIFFENER_C"
+  ]
+ },
+ {
+  "file": "NEC\\NEC_SF_H.uel",
+  "size": 67418,
+  "kind": "detail",
+  "name": "NEC_STIFFENER",
+  "catalog": "-100\tNEC_STIFFENER_H\tAll",
+  "ui_params": 0,
+  "variables": 60,
+  "dvars": 25,
+  "bound_parts": 7,
+  "vf_files": [],
+  "functions": [
+   "fMarketSize",
+   "fP",
+   "if",
+   "int"
+  ],
+  "bitmaps": 6,
+  "presets": [
+   "standard.p_NEC_STIFFENER_H",
+   "standard.p_NEC_STIFFENER_H"
+  ]
+ },
+ {
+  "file": "NEC\\TJ_LIFTTING_HOLE_BEAM.uel",
+  "size": 7068,
+  "kind": "detail",
+  "name": "TJ_LiftingHolesBeam",
+  "catalog": "-100\tTJ_LiftingHolesBeam\tAll",
+  "ui_params": 4,
+  "variables": 7,
+  "dvars": 12,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if"
+  ],
+  "bitmaps": 1,
+  "presets": [
+   "standard.p_TJ_LiftingHolesBeam"
+  ]
+ },
+ {
+  "file": "NEC\\TJ_LIFTTING_HOLE_COL.uel",
+  "size": 6515,
+  "kind": "detail",
+  "name": "TJ_LiftingHolesColumn",
+  "catalog": "-100\tTJ_LiftingHolesColumn\tAll",
+  "ui_params": 4,
+  "variables": 7,
+  "dvars": 12,
+  "bound_parts": 0,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "standard.p_TJ_LiftingHolesColumn"
+  ]
+ },
+ {
+  "file": "NEC\\TJ_PIPECAP.uel",
+  "size": 9754,
+  "kind": "detail",
+  "name": "TJ_PipeCap",
+  "catalog": "-100\tTJ_PipeCap\tAll",
+  "ui_params": 4,
+  "variables": 17,
+  "dvars": 12,
+  "bound_parts": 1,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "fTpl",
+   "if",
+   "max",
+   "min"
+  ],
+  "bitmaps": 1,
+  "presets": [
+   "standard.p_TJ_PipeCap"
+  ]
+ },
+ {
+  "file": "NEC\\TKK_BH_1HNC_1SEC.uel",
+  "size": 13265,
+  "kind": "macro",
+  "name": "TKK_BH_1Hnc_1Sec",
+  "catalog": "-10\tTKK_BH_1Hnc_1Sec\tAll",
+  "ui_params": 5,
+  "variables": 31,
+  "dvars": 14,
+  "bound_parts": 3,
+  "vf_files": [],
+  "functions": [
+   "if",
+   "max"
+  ],
+  "bitmaps": 2,
+  "presets": [
+   "standard.p_TKK_BH_1Hnc_1Sec"
+  ]
+ },
+ {
+  "file": "NEC\\TKK_BUILT_T.uel",
+  "size": 9052,
+  "kind": "macro",
+  "name": "TKK_BuiltT",
+  "catalog": "-10\tTKK_BuiltT\tAll",
+  "ui_params": 4,
+  "variables": 26,
+  "dvars": 12,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "mid"
+  ],
+  "bitmaps": 1,
+  "presets": [
+   "standard.p_TKK_BuiltT"
+  ]
+ },
+ {
+  "file": "NEC\\TKK_SRC_CROSS.uel",
+  "size": 11154,
+  "kind": "macro",
+  "name": "TKK_SRC_Cross",
+  "catalog": "-10\tTKK_SRC_Cross\tAll",
+  "ui_params": 4,
+  "variables": 18,
+  "dvars": 18,
+  "bound_parts": 3,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 2,
+  "presets": [
+   "standard.p_TKK_SRC_Cross"
+  ]
+ },
+ {
+  "file": "PCOL\\S-COL2GIR-TANG DUONG.uel",
+  "size": 39154,
+  "kind": "joint",
+  "name": "0-DM_S-Col2Gir_TANG_DUONG",
+  "catalog": "-1000\t0-DM_S-Col2Gir_TANG_DUONG\tAll",
+  "ui_params": 30,
+  "variables": 71,
+  "dvars": 197,
+  "bound_parts": 7,
+  "vf_files": [
+   "YGY-S_COL2GIR-운용층-TANG_DUONG.txt"
+  ],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "fVF",
+   "if",
+   "max",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+101-B4.p_0-DM_S-Col2Gir_TANG_DUONG",
+   "28-180.p_0-DM_S-Col2Gir_TANG_DUONG"
+  ]
+ },
+ {
+  "file": "PIN-MOMENT\\0-DM-PIN-MOMENT-V2.uel",
+  "size": 39991,
+  "kind": "joint",
+  "name": "0-DM-PIN MOMENT-V2",
+  "catalog": "-1000\t0-DM-PIN MOMENT-V2\tAll",
+  "ui_params": 0,
+  "variables": 104,
+  "dvars": 156,
+  "bound_parts": 7,
+  "vf_files": [
+   "BEAM_TO_TG.txt"
+  ],
+  "functions": [
+   "cos",
+   "fAD",
+   "fP",
+   "fVF",
+   "if",
+   "mid",
+   "sin",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+94 B3.p_0-DM-PIN MOMENT-V2",
+   "+AKC.p_0-DM-PIN MOMENT-V2",
+   "+SAMPLE.p_0-DM-PIN MOMENT-V2"
+  ]
+ },
+ {
+  "file": "PIN-MOMENT CHANGSIN\\YGY_TEMPBEAM-MOMENT.uel",
+  "size": 38478,
+  "kind": "joint",
+  "name": "♥♥♥YGY_TempBeam-Moment",
+  "catalog": "-1000\t♥♥♥YGY_TempBeam-Moment\tAll",
+  "ui_params": 9,
+  "variables": 83,
+  "dvars": 181,
+  "bound_parts": 9,
+  "vf_files": [
+   "YGY-TB-MOMENT-PLTHK.txt",
+   "YGY-TB-MOMENT-WELD-K.txt",
+   "YGY-TB-MOMENT.txt"
+  ],
+  "functions": [
+   "fP",
+   "fTpl",
+   "fVF",
+   "if",
+   "mid",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+104.p_♥♥♥YGY_TempBeam-Moment"
+  ]
+ },
+ {
+  "file": "PINMOMENT CHANGSIN\\PIN MOMENT CHANGSIN.uel",
+  "size": 38467,
+  "kind": "joint",
+  "name": "♥♥♥YGY_TempBeam-Moment",
+  "catalog": "-1000\t♥♥♥YGY_TempBeam-Moment\tAll",
+  "ui_params": 9,
+  "variables": 83,
+  "dvars": 181,
+  "bound_parts": 9,
+  "vf_files": [
+   "YGY-TB-MOMENT-PLTHK.txt",
+   "YGY-TB-MOMENT-WELD-K.txt",
+   "YGY-TB-MOMENT.txt"
+  ],
+  "functions": [
+   "fP",
+   "fTpl",
+   "fVF",
+   "if",
+   "mid",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+104.p_♥♥♥YGY_TempBeam-Moment"
+  ]
+ },
+ {
+  "file": "YGY\\BK K BANG NHAU.uel",
+  "size": 22936,
+  "kind": "joint",
+  "name": "♥YGY_BK-SMALL",
+  "catalog": "-1000\t♥YGY_BK-SMALL\tAll",
+  "ui_params": 9,
+  "variables": 21,
+  "dvars": 122,
+  "bound_parts": 10,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "YGY\\BK-END_PLATE.uel",
+  "size": 35052,
+  "kind": "joint",
+  "name": "♥YGY_BK-END_NEW",
+  "catalog": "-1000\t♥YGY_BK-END_NEW\tAll",
+  "ui_params": 13,
+  "variables": 40,
+  "dvars": 184,
+  "bound_parts": 15,
+  "vf_files": [],
+  "functions": [
+   "cos",
+   "fP",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "YGY\\BK-SAME.uel",
+  "size": 20120,
+  "kind": "joint",
+  "name": "♥YGY_BK-SAME",
+  "catalog": "-1000\t♥YGY_BK-SAME\tAll",
+  "ui_params": 6,
+  "variables": 24,
+  "dvars": 111,
+  "bound_parts": 8,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "YGY\\BU DUONG HAN TSB.uel",
+  "size": 14172,
+  "kind": "joint",
+  "name": "♥YGY_접합용 하부PL보강-50",
+  "catalog": "-1000\t♥YGY_접합용 하부PL보강-50\tAll",
+  "ui_params": 2,
+  "variables": 6,
+  "dvars": 45,
+  "bound_parts": 3,
+  "vf_files": [],
+  "functions": [
+   "fP",
+   "if"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "YGY\\SUNG YGY.uel",
+  "size": 106203,
+  "kind": "joint",
+  "name": "★YGY_꺽보-R1_nopw",
+  "catalog": "-1000\t★YGY_꺽보-R1\tAll\r\n-100\tDBS-사재_CUT_T\tAll\r\n-100\tTJ_WeldPrep_Flg_V\tAll|\t뾫먝둎먩\r\nTHUMBNAIL\tY:\\02-EDIT\\05-JOY ENG\\240513 Tongbok District 2 in Pyeongtaek City\\202308-Tongbok District 2 in Pyeongtaek City-floor\\attributes\\TJ_WeldPrep_Flg_V_thm.bmp\r\n-100\tDBS-사재_CUT_B\tAll\r\n-100\tTJ_WeldPrep_Scallop\tAll|\t긚긇깋긞긵\r\nTHUMBNAIL\tE:\\모델 백업\\2015년\\한진중공업\\43-1구역 COL. LUG 부착 모델\\제2여객터미널 골조공사43-1 구역\\attributes\\TJ_WeldPrep_Scallop_thm.bmp\r\n-100\tWeldBar_H\tAll|\t뿞뱰띫\r\nTHUMBNAIL\tWeldBar_H_thm.bmp",
+  "ui_params": 9,
+  "variables": 146,
+  "dvars": 246,
+  "bound_parts": 38,
+  "vf_files": [],
+  "functions": [
+   "cos",
+   "fP",
+   "fTpl",
+   "if",
+   "round",
+   "tan"
+  ],
+  "bitmaps": 8,
+  "presets": [
+   "0JOY-공장개선.p_TJ_WeldPrep_Flg_V",
+   "0JOY-현장개선.p_TJ_WeldPrep_Flg_V",
+   "0Plus-공장개선.p_TJ_WeldPrep_Flg_V",
+   "0Plus-현장개선.p_TJ_WeldPrep_Flg_V",
+   "0일흥-공장개선.p_TJ_WeldPrep_Flg_V",
+   "0일흥-현장개선.p_TJ_WeldPrep_Flg_V",
+   "LFLG_ONLY.p_TJ_WeldPrep_Flg_V",
+   "SSSSS.p_TJ_WeldPrep_Flg_V",
+   "STD.p_TJ_WeldPrep_Flg_V",
+   "0IL-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0JOY-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0Plus-스칼렙.p_TJ_WeldPrep_Scallop",
+   "0일흥-스칼렙.p_TJ_WeldPrep_Scallop",
+   "1.p_TJ_WeldPrep_Scallop",
+   "30.p_TJ_WeldPrep_Scallop",
+   "35.p_TJ_WeldPrep_Scallop",
+   "45.p_TJ_WeldPrep_Scallop",
+   "R40.p_TJ_WeldPrep_Scallop",
+   "STD.p_TJ_WeldPrep_Scallop",
+   "00YGY-공장-FB_1F.p_WeldBar_H",
+   "00YGY-공장-FB_B1.p_WeldBar_H",
+   "00YGY-공장-FB_B2.p_WeldBar_H",
+   "00YGY-공장-FB_B3.p_WeldBar_H",
+   "00YGY-공장-FB_B4.p_WeldBar_H",
+   "00YGY-공장-FB_B5.p_WeldBar_H",
+   "00YGY-현장-FB_1F.p_WeldBar_H",
+   "00YGY-현장-FB_B1.p_WeldBar_H",
+   "00YGY-현장-FB_B2.p_WeldBar_H",
+   "00YGY-현장-FB_B3.p_WeldBar_H",
+   "00YGY-현장-FB_B4.p_WeldBar_H",
+   "00YGY-현장-FB_B5.p_WeldBar_H",
+   "0JOY-공장-B1.p_WeldBar_H",
+   "0JOY-공장-B2.p_WeldBar_H",
+   "0JOY-공장-B3.p_WeldBar_H",
+   "0JOY-공장-B4.p_WeldBar_H",
+   "0JOY-공장-B5.p_WeldBar_H",
+   "0JOY-공장-B6.p_WeldBar_H",
+   "0JOY-공장-B7.p_WeldBar_H",
+   "0JOY-공장-F1.p_WeldBar_H",
+   "0JOY-공장백바-GB1.p_WeldBar_H",
+   "0JOY-공장백바-SB1.p_WeldBar_H",
+   "0JOY-공장백바.p_WeldBar_H",
+   "0JOY-현장-B1.p_WeldBar_H",
+   "0JOY-현장-B2.p_WeldBar_H",
+   "0JOY-현장-B3.p_WeldBar_H",
+   "0JOY-현장-B4.p_WeldBar_H",
+   "0JOY-현장-B5.p_WeldBar_H",
+   "0JOY-현장-B6.p_WeldBar_H",
+   "0JOY-현장-B7.p_WeldBar_H",
+   "0JOY-현장-B8.p_WeldBar_H",
+   "0JOY-현장-F1.p_WeldBar_H",
+   "0JOY-현장백바-G1.p_WeldBar_H",
+   "0JOY-현장백바-S1.p_WeldBar_H",
+   "0JOY-현장백바.p_WeldBar_H",
+   "0Plus-공장백바.p_WeldBar_H",
+   "0Plus-현장백바.p_WeldBar_H",
+   "0통북-1F.p_WeldBar_H",
+   "1F.p_WeldBar_H",
+   "1FB.p_WeldBar_H",
+   "1F_SITE.p_WeldBar_H",
+   "A-B3FB.p_WeldBar_H",
+   "B-B3FB.p_WeldBar_H",
+   "B1FB.p_WeldBar_H",
+   "C-B1FB.p_WeldBar_H",
+   "FB-COL-TO-GIR.p_WeldBar_H",
+   "FB.p_WeldBar_H",
+   "standard.p_WeldBar_H"
+  ]
+ },
+ {
+  "file": "YGY\\THEM CSF COT.uel",
+  "size": 17714,
+  "kind": "joint",
+  "name": "YGY_(개선)-COL-FLG보강",
+  "catalog": "-1000\tYGY_(개선)-COL-FLG보강\tAll\r\n-10000\tBH\tAll",
+  "ui_params": 4,
+  "variables": 6,
+  "dvars": 33,
+  "bound_parts": 2,
+  "vf_files": [],
+  "functions": [
+   "fP"
+  ],
+  "bitmaps": 0,
+  "presets": []
+ },
+ {
+  "file": "YGY\\THEM PL TAM GIAC DUOI BEAM.uel",
+  "size": 29436,
+  "kind": "joint",
+  "name": "YGY_(ACT)-삼각PLATE",
+  "catalog": "-1000\tYGY_(ACT)-삼각PLATE\tAll\r\n-10000\tACT\tAll",
+  "ui_params": 6,
+  "variables": 5,
+  "dvars": 9,
+  "bound_parts": 1,
+  "vf_files": [],
+  "functions": [],
+  "bitmaps": 0,
+  "presets": [
+   "0-H669_336_26_48.p_YGY_(ACT)-삼각PLATE",
+   "0-H689_342_32_58.p_YGY_(ACT)-삼각PLATE"
+  ]
+ },
+ {
+  "file": "YGY MOMENT\\YGY.uel",
+  "size": 38857,
+  "kind": "joint",
+  "name": "♥♥♥YGY_TempBeam-Moment",
+  "catalog": "-1000\t♥♥♥YGY_TempBeam-Moment\tAll",
+  "ui_params": 9,
+  "variables": 87,
+  "dvars": 181,
+  "bound_parts": 9,
+  "vf_files": [
+   "YGY-TB-MOMENT-PLTHK.txt",
+   "YGY-TB-MOMENT-WELD-K.txt",
+   "YGY-TB-MOMENT.txt"
+  ],
+  "functions": [
+   "fP",
+   "fTpl",
+   "fVF",
+   "if",
+   "mid",
+   "tan"
+  ],
+  "bitmaps": 0,
+  "presets": [
+   "+104.p_♥♥♥YGY_TempBeam-Moment",
+   "104L.p_♥♥♥YGY_TempBeam-Moment"
+  ]
+ }
+]
