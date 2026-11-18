@@ -79,15 +79,18 @@ Thêm 4 **biến mới** theo yêu cầu người dùng (17/11/2026), không có
 
 ## Bảng tra theo profile Part 2 (P56, P57, biến mới 17/11/2026)
 Bản đế, bản mã và bu lông thường đổi theo profile của raker, nên component có bảng tra để lấy các giá trị này.
-- **File:** ô P56 ở tab Base Plate.
+- **File:** ô P56 ở tab Base Plate, kiểu `file_in`, có nút **"..."** để chọn file (18/11/2026). Trong `UEL_TESTER.exe`, nút "..." mở sẵn thư mục model.
   - Để trống thì dùng `RAKER+T_GIRDER.txt`.
-  - Chỉ ghi tên file thì tìm lần lượt: thư mục model → `XS_PROJECT` → `XS_FIRM` → thư mục plugin.
-  - Ghi đường dẫn đầy đủ thì dùng đúng file đó.
-- **Mẫu:** [RAKER+T_GIRDER.txt](RAKER+T_GIRDER.txt). `install.bat` chép file này vào thư mục plugin nếu ở đó chưa có. Bảng dùng thật nên đặt ở thư mục model hoặc thư mục firm.
+- **Bảng tra lưu trong model** (người dùng yêu cầu 18/11/2026). Code ở `_Common\Core\LookupTable.cs`, hàm `ResolveInModel`.
+  1. Thư mục model đã có file **cùng tên** thì luôn dùng file trong model, kể cả khi P56 chọn một file ở chỗ khác. Log ghi rõ là đang dùng bản trong model.
+  2. Model chưa có thì tìm file nguồn: đường dẫn đầy đủ thì dùng đúng file đó; chỉ có tên thì tìm `XS_PROJECT` → `XS_FIRM` → thư mục plugin. Tìm thấy thì **chép 1 bản vào thư mục model** rồi dùng bản đó.
+  3. Không bao giờ ghi đè file đã có trong model. Muốn đổi bảng thì sửa file trong model, hoặc xoá file đó để lần sau chép lại từ file nguồn.
+- **Mẫu:** [RAKER+T_GIRDER.txt](RAKER+T_GIRDER.txt). `install.bat` chép file này vào thư mục plugin nếu ở đó chưa có. Lần đầu chạy với P56 trống, file mẫu được chép vào model.
 - **Định dạng:**
   - phân cách TAB, dòng `#` là ghi chú;
   - cột đầu là profile raker. Không phân biệt hoa thường; `x` được coi như `*`;
-  - các cột sau đặt tên theo biến P, như `P1`, `P20`, `P38_diameter`, `P34`, `P43`…;
+  - các cột sau đặt **tên dễ đọc** (18/11/2026), như `Base Plate Thk`, `Gusset Thk`, `Bolt Size`, `Bolt Qty Y`, `Bolt Dist Y`…. Danh sách đủ ở đầu file mẫu, khai báo bằng `[UelParam("P1", Table = "Base Plate Thk")]` trong `Params.cs`. Không phân biệt hoa thường, dấu cách tuỳ ý. Ghi tên biến (`P1`, `P38_diameter`) hoặc `Base Plate Thk (P1)` cũng được;
+  - cột sai tên thì bị bỏ qua, log ghi `CANH BAO` kèm danh sách tên đúng;
   - ô trống thì giữ giá trị hộp thoại;
   - dòng `*` là dòng mặc định;
   - lưu bằng cp949 hay UTF-8 đều được, nên lưu từ Excel dạng "Text (Tab delimited)" là dùng được.

@@ -23,7 +23,7 @@ namespace UEL.Plugins
         [StructuresField("P7")] public double LeftGap;
         [StructuresField("P8")] public double BottGap;
         [StructuresField("P19")] public double RightGap;
-        [StructuresField("P56")] public string TablePath;        // biến mới: đường dẫn bảng tra theo profile Part 2
+        [StructuresField("P56")] public string TablePath;        // biến mới: đường dẫn bảng tra theo profile Part 2 (ô file_in, có nút "...")
         [StructuresField("P57")] public int UseTable;            // biến mới: 1 = dùng bảng tra (mặc định), 0 = chỉ hộp thoại
 
         // ---- Tab "Connection" ----
@@ -100,7 +100,7 @@ page(""TeklaStructures"", """")
             parameter("""", ""P4"", string, text, 760, 135, 120)
             attribute("""", ""Bang tra theo profile Part 2"", label, ""%s"", none, none, ""0"", ""0"", 640, 203)
             attribute("""", ""File (trong = RAKER+T_GIRDER.txt)"", label, ""%s"", none, none, ""0"", ""0"", 640, 233)
-            parameter("""", ""P56"", string, text, 640, 252, 300)
+            parameter("""", ""P56"", file_in, text, 640, 252, 300)
             attribute("""", ""Dung bang tra"", label, ""%s"", none, none, ""0"", ""0"", 640, 295)
             parameter("""", ""P57"", YesNo, number, 760, 292, 120)
         }

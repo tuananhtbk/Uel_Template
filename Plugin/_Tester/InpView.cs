@@ -5,7 +5,8 @@
 // Khi dựng, các ô đã nhập được gom thành bảng tên -> giá trị (int / double / string, giống trường [StructuresField])
 // rồi đưa qua Core.Apply -> AfterApply, y như bản DLL làm khi Tekla chạy component.
 //
-// Chưa có: ảnh minh hoạ (chỉ vẽ khung), các nút chọn catalog profile / material / bolt của Tekla (gõ tay),
+// Ô kiểu file_in có nút "..." chọn file (mở ở thư mục model).
+// Chưa có: các nút chọn catalog profile / material / bolt của Tekla (gõ tay),
 // lưu / nạp bộ thuộc tính.
 using System;
 using System.Collections;
@@ -178,7 +179,36 @@ namespace UEL.Tester
             tb.HandleCreated += delegate { SetCue(tb); };
             tb.TextChanged += delegate { tb.BackColor = f.Known ? SystemColors.Window : Color.LightYellow; };
             host.Controls.Add(tb);
+            if (f.Type == "file_in") AddBrowse(tb, host);
             _fields.Add(f);
+        }
+
+        /// Thư mục model đang mở (TesterForm đặt khi nối Tekla): nơi mở hộp chọn file đầu tiên.
+        public static string ModelDir;
+
+        /// Kiểu file_in của Tekla: ô chữ + nút "..." chọn file (giống hộp thoại Tekla).
+        private static void AddBrowse(TextBox tb, Control host)
+        {
+            const int bw = 28;
+            tb.Width = Math.Max(40, tb.Width - bw - 2);
+            Button b = new Button();
+            b.Text = "...";
+            b.Size = new Size(bw, tb.Height + 2);
+            b.Location = new Point(tb.Right + 2, tb.Top - 1);
+            b.Click += delegate
+            {
+                using (OpenFileDialog dlg = new OpenFileDialog())
+                {
+                    dlg.Filter = "Bang tra (*.txt;*.dat)|*.txt;*.dat|Tat ca (*.*)|*.*";
+                    string cur = tb.Text.Trim().Trim('"');
+                    string dir = null;
+                    try { if (cur.Length > 0 && System.IO.Path.IsPathRooted(cur)) dir = System.IO.Path.GetDirectoryName(cur); } catch (ArgumentException) { }
+                    if (dir == null || !System.IO.Directory.Exists(dir)) dir = ModelDir;
+                    if (!string.IsNullOrEmpty(dir) && System.IO.Directory.Exists(dir)) dlg.InitialDirectory = dir;
+                    if (dlg.ShowDialog(tb.FindForm()) == DialogResult.OK) tb.Text = dlg.FileName;
+                }
+            };
+            host.Controls.Add(b);
         }
 
         /// attribute("P13", "Nhan", option, "%s", none, none, "0.0", "0.0", x, y, rong) { value("A", 1) value("B", 0) }

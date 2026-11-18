@@ -2,14 +2,18 @@
 //
 // Định dạng file (giống các bảng .txt trong UEL Template):
 //   - phân cách TAB, dòng đầu (không tính dòng trống / dòng "#") là tiêu đề;
-//   - cột đầu là KHOÁ (thường là profile của Part 2), các cột sau đặt tên theo biến P của component (P1, P20, P38_diameter...);
-//   - cột không phải tên biến (REMARK...) thì bỏ qua; ô trống = không đổi giá trị đó;
+//   - cột đầu là KHOÁ (thường là profile của Part 2). Các cột sau đặt tên theo một trong 3 cách (18/11/2026):
+//       tên dễ đọc khai báo ở [UelParam("P1", Table = "Base Plate Thk")]  (không phân biệt hoa thường, bỏ dấu cách . _ - '),
+//       tên biến P (P1, P20, P38_diameter...), hoặc tên kèm biến trong ngoặc "Base Plate Thk (P1)";
+//   - cột REMARK / NOTE / GHI CHU bỏ qua; cột khác không nhận ra thì bỏ qua và ghi CANH BAO; ô trống = không đổi giá trị đó;
 //   - dòng khoá "*" = dòng mặc định khi không có dòng nào khớp;
 //   - encoding cp949 hoặc UTF-8 (tự nhận), xuống dòng CRLF hoặc LF.
 //
-// Tìm file (ApplyByKey): đường dẫn đầy đủ thì dùng luôn; chỉ có tên (hoặc đường dẫn tương đối) thì tìm lần lượt
-//   thư mục model -> XS_PROJECT -> XS_FIRM -> thư mục chứa DLL plugin.
-// Bảng chỉ ĐỌC, không bao giờ ghi lại file.
+// Tìm file (ApplyByKey, người dùng yêu cầu 18/11/2026): bảng tra lưu trong THƯ MỤC MODEL và luôn ưu tiên bản trong model.
+//   1. Thư mục model đã có file cùng tên -> dùng file đó (kể cả khi ô chọn file ở chỗ khác).
+//   2. Chưa có -> tìm file nguồn: đường dẫn đầy đủ thì dùng luôn; chỉ có tên (hoặc đường dẫn tương đối) thì tìm lần lượt
+//      XS_PROJECT -> XS_FIRM -> thư mục chứa DLL plugin; tìm thấy thì CHÉP 1 bản vào thư mục model rồi dùng bản đó.
+//   Không bao giờ ghi đè file đã có trong model. Ngoài việc chép đó, bảng chỉ được ĐỌC.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -121,6 +125,45 @@ namespace UEL.Core
             return null;
         }
 
+        /// Bảng tra lưu trong model: thư mục model có file cùng tên thì dùng file đó; chưa có thì tìm file nguồn (Resolve)
+        /// và chép 1 bản vào thư mục model (không ghi đè). Không biết thư mục model thì như Resolve.
+        public static string ResolveInModel(string fileOrPath, string modelPath, List<string> tried)
+        {
+            if (string.IsNullOrEmpty(fileOrPath) || fileOrPath.Trim().Length == 0) return null;
+            string f = fileOrPath.Trim().Trim('"');
+            if (string.IsNullOrEmpty(modelPath)) return Resolve(f, modelPath, tried);
+            string inModel;
+            try { inModel = System.IO.Path.Combine(modelPath, System.IO.Path.GetFileName(f)); }
+            catch (ArgumentException) { return Resolve(f, modelPath, tried); }
+            tried.Add(inModel);
+            if (File.Exists(inModel))
+            {
+                if (System.IO.Path.IsPathRooted(f) && File.Exists(f) && !SamePath(f, inModel))
+                    Logger.Log("Bang tra: model da co " + System.IO.Path.GetFileName(f) + " -> dung ban trong model (" + inModel +
+                               "), KHONG dung " + f + ". Muon dung bang moi: sua file trong model, hoac xoa no de chep lai.");
+                return inModel;
+            }
+            string src = Resolve(f, modelPath, tried);
+            if (src == null) return null;
+            try
+            {
+                File.Copy(src, inModel, false);
+                Logger.Log("Bang tra: da chep " + src + " vao model -> " + inModel);
+                return inModel;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("CANH BAO: khong chep duoc bang tra vao model (" + ex.Message + ") -> dung " + src);
+                return src;
+            }
+        }
+
+        private static bool SamePath(string a, string b)
+        {
+            try { return string.Equals(System.IO.Path.GetFullPath(a), System.IO.Path.GetFullPath(b), StringComparison.OrdinalIgnoreCase); }
+            catch (Exception) { return false; }
+        }
+
         /// Thư mục chứa DLL plugin của component (bản phát hành <Ten>.dll hoặc DEV <Ten>_DEV.dll) đang nạp trong tiến trình.
         /// Core bản DEV nạp dạng byte nên không có Location -> tìm theo tên assembly của vỏ plugin.
         private static List<string> PluginDirs()
@@ -151,7 +194,7 @@ namespace UEL.Core
             Hashtable applied = new Hashtable();
             string want = string.IsNullOrEmpty(fileOrPath) || fileOrPath.Trim().Length == 0 ? defaultFile : fileOrPath.Trim();
             List<string> tried = new List<string>();
-            string path = Resolve(want, modelPath, tried);
+            string path = ResolveInModel(want, modelPath, tried);
             if (path == null)
             {
                 Logger.Log("CANH BAO: khong tim thay bang tra '" + want + "' -> dung gia tri hop thoai. Da tim: " + string.Join(" | ", tried.ToArray()));
@@ -172,11 +215,16 @@ namespace UEL.Core
                 return applied;
             }
 
+            // Tiêu đề cột: tên biến P ("P1"), tên dễ đọc ([UelParam(Table = "Base Plate Thk")]),
+            // hoặc tên kèm biến trong ngoặc ("Base Plate Thk (P1)" -> lấy P1).
             Dictionary<string, PropertyInfo> props = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, PropertyInfo> byTable = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
             foreach (PropertyInfo pi in prm.GetType().GetProperties())
             {
                 UelParamAttribute a = (UelParamAttribute)Attribute.GetCustomAttribute(pi, typeof(UelParamAttribute));
-                if (a != null && pi.CanWrite) props[a.Name] = pi;
+                if (a == null || !pi.CanWrite) continue;
+                props[a.Name] = pi;
+                if (!string.IsNullOrEmpty(a.Table)) byTable[NormalizeHeader(a.Table)] = pi;
             }
             List<string> skipList = new List<string>(skip ?? new string[0]);
             List<string> unknown = new List<string>();
@@ -186,23 +234,55 @@ namespace UEL.Core
                 string col = t.Header[i];
                 if (col.Length == 0 || row[i].Length == 0) continue;
                 PropertyInfo pi;
-                if (!props.TryGetValue(col, out pi))
+                Match inParen = Regex.Match(col, @"[\(\[]\s*(P\d+\w*)\s*[\)\]]\s*$", RegexOptions.IgnoreCase);
+                bool found = props.TryGetValue(col, out pi)
+                             || (inParen.Success && props.TryGetValue(inParen.Groups[1].Value, out pi))
+                             || byTable.TryGetValue(NormalizeHeader(col), out pi);
+                if (!found)
                 {
-                    if (Regex.IsMatch(col, @"^P\d+", RegexOptions.IgnoreCase)) unknown.Add(col);
+                    if (!IsRemarkColumn(col)) unknown.Add(col);
                     continue;
                 }
+                string pname = ((UelParamAttribute)Attribute.GetCustomAttribute(pi, typeof(UelParamAttribute))).Name;
                 bool skipIt = false;
-                foreach (string s in skipList) if (string.Equals(s, col, StringComparison.OrdinalIgnoreCase)) skipIt = true;
+                foreach (string s in skipList) if (string.Equals(s, pname, StringComparison.OrdinalIgnoreCase)) skipIt = true;
                 if (skipIt) continue;
-                values[((UelParamAttribute)Attribute.GetCustomAttribute(pi, typeof(UelParamAttribute))).Name] = row[i];
+                values[pname] = row[i];
             }
             ParamMapper.Apply(prm, values);
             StringBuilder sb = new StringBuilder();
             foreach (DictionaryEntry e in values) { applied[e.Key] = e.Value; sb.Append(e.Key).Append('=').Append(e.Value).Append(' '); }
             Logger.Log("Bang tra " + path + ": dong '" + matched + "' (khoa '" + key + "') -> " + (sb.Length > 0 ? sb.ToString().Trim() : "(khong co o nao)"));
             if (unknown.Count > 0)
-                Logger.Log("CANH BAO: bang tra co cot khong phai bien cua component, bo qua: " + string.Join(", ", unknown.ToArray()));
+                Logger.Log("CANH BAO: bang tra co cot khong nhan ra (sai ten?), bo qua: " + string.Join(", ", unknown.ToArray()) +
+                           ". Ten cot hop le: " + string.Join(", ", ColumnNames(prm).ToArray()));
             return applied;
+        }
+
+        /// So khớp tên cột: không phân biệt hoa thường, bỏ dấu cách và . _ - ' ( ).
+        public static string NormalizeHeader(string s)
+        {
+            return s == null ? "" : Regex.Replace(s, @"[\s\._\-'’\(\)]", "").ToUpperInvariant();
+        }
+
+        /// Cột ghi chú (bỏ qua, không cảnh báo): REMARK, NOTE, GHI CHU...
+        private static bool IsRemarkColumn(string col)
+        {
+            string n = NormalizeHeader(col);
+            return n.StartsWith("REMARK") || n.StartsWith("NOTE") || n.StartsWith("GHICHU") || n.StartsWith("COMMENT");
+        }
+
+        /// Tên cột dùng được cho bảng tra của component: "Ten de doc (P..)" hoặc "P..".
+        public static List<string> ColumnNames(object prm)
+        {
+            List<string> r = new List<string>();
+            foreach (PropertyInfo pi in prm.GetType().GetProperties())
+            {
+                UelParamAttribute a = (UelParamAttribute)Attribute.GetCustomAttribute(pi, typeof(UelParamAttribute));
+                if (a == null || !pi.CanWrite) continue;
+                r.Add(string.IsNullOrEmpty(a.Table) ? a.Name : a.Table + " (" + a.Name + ")");
+            }
+            return r;
         }
     }
 }

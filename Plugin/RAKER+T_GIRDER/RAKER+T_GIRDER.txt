@@ -1,11 +1,18 @@
 # Bang tra RAKER+T_GIRDER theo profile Part 2 (raker). Phan cach TAB. Dong bat dau bang # la ghi chu.
-# Cot dau = profile raker (khong phan biet hoa thuong, "x" = "*"). Cac cot sau dat ten theo bien P cua hop thoai.
-# O trong = giu gia tri hop thoai. Cot REMARK (khong phai bien P) duoc bo qua.
+# Cot dau = profile raker (khong phan biet hoa thuong, "x" = "*").
+# O trong = giu gia tri hop thoai. Cot REMARK duoc bo qua. Cot sai ten: bo qua va ghi CANH BAO vao log.
 # Dong khoa "*" (neu them) = dong mac dinh cho profile khong co trong bang.
-# Bien hay dung: P1 day ban de, P2 vat lieu ban de, P20 day ban ma, P22 vat lieu ban ma, P38_diameter co bu long,
-#   P38_screwdin tieu chuan bu long, P29 bu long -> dau bung, P31/P34 so cot/so hang, P32/P43 khoang cach cot/hang,
-#   P44 eH, P45 eV, P46 lui bung, P54 dai ban ma (0 = tu tinh), P6/P7/P8/P19 gap ban de, P55 profile FB.
-PROFILE	P1	P20	P38_diameter	P34	P43	P29	P44	P45	P46	P54	REMARK
+# Ten cot (khong phan biet hoa thuong, dau cach tuy y; ghi ten bien P1, P20... nhu cu cung duoc):
+#   Base Plate Thk (P1), Base Plate Mat (P2), Base Plate Class (P3), Base Plate Mark (P4),
+#   Top Gap (P6), Left Gap (P7), Bott Gap (P8), Right Gap (P19),
+#   Conn Type (P13), Gusset Thk (P20), Gusset Mat (P22), Gusset Mark (P21), Gusset Class (P23), Gusset L or R (P24),
+#   Web Gap (P46), Gusset Length (P54, 0 = tu tinh),
+#   Bolt Size (P38_diameter), Bolt Standard (P38_screwdin), Bolt Qty X (P31), Bolt Dist X (P32), Bolt Qty Y (P34),
+#   Bolt Dist Y (P43), Bolt To Web (P29), Bolt Edge X (P44, eH), Bolt Edge Y (P45, eV),
+#   Tolerance (P40), Slotted Hole X (P39), Slotted Hole Y (P41),
+#   Flat Bar (P52), FB Mark (P11), FB Mat (P5), FB Profile (P55), Flange Weld Gap (P10), Weld Angle (P12),
+#   Top Scallop (P51), Bott Scallop (P53)
+PROFILE	Base Plate Thk	Gusset Thk	Bolt Size	Bolt Qty Y	Bolt Dist Y	Bolt To Web	Bolt Edge X	Bolt Edge Y	Web Gap	Gusset Length	REMARK
 H350*357*19*19	19	30	24	2	130	230	60	40	15		preset KK350 cua .uel goc
 # Vi du them dong (preset KK250 cua .uel goc, CHUA RO profile raker cua preset nay - kiem tra truoc khi bo dau #):
 # H250*250*9*14	15	16	24	2	90	230	60	40	15		preset KK250

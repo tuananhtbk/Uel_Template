@@ -34,14 +34,14 @@ namespace UEL.Core.Components.RakerTG
         }
 
         // ---------------- Base Plate
-        [UelParam("P1"), Category("1. Base Plate"), DisplayName("P1  Base Plate Thk.")] public double BasePlateThk { get; set; }
-        [UelParam("P2"), Category("1. Base Plate"), DisplayName("P2  Mat.")] public string BasePlateMat { get; set; }
-        [UelParam("P3"), Category("1. Base Plate"), DisplayName("P3  Class")] public int BasePlateClass { get; set; }
-        [UelParam("P4"), Category("1. Base Plate"), DisplayName("P4  Mark")] public string BasePlateMark { get; set; }
-        [UelParam("P6"), Category("1. Base Plate"), DisplayName("P6  Top gap")] public double TopGap { get; set; }
-        [UelParam("P7"), Category("1. Base Plate"), DisplayName("P7  Left gap")] public double LeftGap { get; set; }
-        [UelParam("P8"), Category("1. Base Plate"), DisplayName("P8  Bott. gap")] public double BottGap { get; set; }
-        [UelParam("P19"), Category("1. Base Plate"), DisplayName("P19 Right gap")] public double RightGap { get; set; }
+        [UelParam("P1", Table = "Base Plate Thk"), Category("1. Base Plate"), DisplayName("P1  Base Plate Thk.")] public double BasePlateThk { get; set; }
+        [UelParam("P2", Table = "Base Plate Mat"), Category("1. Base Plate"), DisplayName("P2  Mat.")] public string BasePlateMat { get; set; }
+        [UelParam("P3", Table = "Base Plate Class"), Category("1. Base Plate"), DisplayName("P3  Class")] public int BasePlateClass { get; set; }
+        [UelParam("P4", Table = "Base Plate Mark"), Category("1. Base Plate"), DisplayName("P4  Mark")] public string BasePlateMark { get; set; }
+        [UelParam("P6", Table = "Top Gap"), Category("1. Base Plate"), DisplayName("P6  Top gap")] public double TopGap { get; set; }
+        [UelParam("P7", Table = "Left Gap"), Category("1. Base Plate"), DisplayName("P7  Left gap")] public double LeftGap { get; set; }
+        [UelParam("P8", Table = "Bott Gap"), Category("1. Base Plate"), DisplayName("P8  Bott. gap")] public double BottGap { get; set; }
+        [UelParam("P19", Table = "Right Gap"), Category("1. Base Plate"), DisplayName("P19 Right gap")] public double RightGap { get; set; }
 
         // ---------------- Bảng tra theo profile Part 2 (BIẾN MỚI, người dùng 17/11/2026; không có trong .uel gốc)
         /// Đường dẫn bảng tra. Trống = "RAKER+T_GIRDER.txt"; chỉ tên file thì tìm ở thư mục model -> XS_PROJECT -> XS_FIRM -> thư mục plugin.
@@ -50,45 +50,45 @@ namespace UEL.Core.Components.RakerTG
         [UelParam("P57"), Category("0. Bang tra"), DisplayName("P57 Dung bang tra")] public bool UseTable { get; set; }
 
         // ---------------- Gusset
-        [UelParam("P13"), Category("2. Gusset"), DisplayName("P13 Conn. Type (0 = ban ma + bu long)")] public int ConnType { get; set; }
-        [UelParam("P20"), Category("2. Gusset"), DisplayName("P20 Gusset Thk.")] public double GussetThk { get; set; }
-        [UelParam("P22"), Category("2. Gusset"), DisplayName("P22 Matt")] public string GussetMat { get; set; }
-        [UelParam("P21"), Category("2. Gusset"), DisplayName("P21 Mark")] public string GussetMark { get; set; }
-        [UelParam("P23"), Category("2. Gusset"), DisplayName("P23 Class")] public int GussetClass { get; set; }
-        [UelParam("P24"), Category("2. Gusset"), DisplayName("P24 Guss. L or R (true = 1)")] public bool GussetOnPositiveSide { get; set; }
+        [UelParam("P13", Table = "Conn Type"), Category("2. Gusset"), DisplayName("P13 Conn. Type (0 = ban ma + bu long)")] public int ConnType { get; set; }
+        [UelParam("P20", Table = "Gusset Thk"), Category("2. Gusset"), DisplayName("P20 Gusset Thk.")] public double GussetThk { get; set; }
+        [UelParam("P22", Table = "Gusset Mat"), Category("2. Gusset"), DisplayName("P22 Matt")] public string GussetMat { get; set; }
+        [UelParam("P21", Table = "Gusset Mark"), Category("2. Gusset"), DisplayName("P21 Mark")] public string GussetMark { get; set; }
+        [UelParam("P23", Table = "Gusset Class"), Category("2. Gusset"), DisplayName("P23 Class")] public int GussetClass { get; set; }
+        [UelParam("P24", Table = "Gusset L or R"), Category("2. Gusset"), DisplayName("P24 Guss. L or R (true = 1)")] public bool GussetOnPositiveSide { get; set; }
         /// Mặc định (17/11/2026, theo hướng lắp raker): bản mã đặt PHÍA TRONG góc giữa primary và secondary.
         /// Tắt khi người dùng nhập P24 trong hộp thoại (xem RakerTGComponent.AfterApply) -> theo P24.
         [Category("2. Gusset"), DisplayName("Ban ma phia trong (tu dong khi P24 de trong)")] public bool GussetSideAuto { get; set; }
-        [UelParam("P46"), Category("2. Gusset"), DisplayName("P46 Gap Web beam to base pl")] public double WebGap { get; set; }
+        [UelParam("P46", Table = "Web Gap"), Category("2. Gusset"), DisplayName("P46 Gap Web beam to base pl")] public double WebGap { get; set; }
         /// BIẾN MỚI, không có trong .uel gốc (người dùng 17/11/2026): chiều dài cạnh dài bản mã (hình bình hành, đo dọc trục raker).
         /// 0 hoặc để trống = tự tính như cũ (cột bu lông cuối + eH P44).
-        [UelParam("P54"), Category("2. Gusset"), DisplayName("P54 Gusset length (0 = auto)")] public double GussetLength { get; set; }
+        [UelParam("P54", Table = "Gusset Length"), Category("2. Gusset"), DisplayName("P54 Gusset length (0 = auto)")] public double GussetLength { get; set; }
 
         // ---------------- Bolts
-        [UelParam("P29"), Category("3. Bolt"), DisplayName("P29 Bolt To web Beam")] public double BoltToWebEnd { get; set; }
-        [UelParam("P31"), Category("3. Bolt"), DisplayName("P31 Bolt Q'ty x")] public int BoltQtyX { get; set; }
-        [UelParam("P32"), Category("3. Bolt"), DisplayName("P32 Bolt distance x")] public double BoltDistX { get; set; }
-        [UelParam("P34"), Category("3. Bolt"), DisplayName("P34 Bolt Q'ty y")] public int BoltQtyY { get; set; }
-        [UelParam("P43"), Category("3. Bolt"), DisplayName("P43 Bolt distance y")] public double BoltDistY { get; set; }
-        [UelParam("P44"), Category("3. Bolt"), DisplayName("P44 Bolt to Gp_x (eH)")] public double BoltEdgeX { get; set; }
-        [UelParam("P45"), Category("3. Bolt"), DisplayName("P45 Bolt to Gp_y (eV)")] public double BoltEdgeY { get; set; }
-        [UelParam("P38_diameter"), Category("3. Bolt"), DisplayName("P38 Bolt size")] public double BoltSize { get; set; }
-        [UelParam("P38_screwdin"), Category("3. Bolt"), DisplayName("P38 Bolt standard")] public string BoltStandard { get; set; }
-        [UelParam("P40"), Category("3. Bolt"), DisplayName("P40 Tolerance")] public double Tolerance { get; set; }
-        [UelParam("P39"), Category("3. Bolt"), DisplayName("P39 Slotted hole X")] public double SlotX { get; set; }
-        [UelParam("P41"), Category("3. Bolt"), DisplayName("P41 Slotted hole Y")] public double SlotY { get; set; }
+        [UelParam("P29", Table = "Bolt To Web"), Category("3. Bolt"), DisplayName("P29 Bolt To web Beam")] public double BoltToWebEnd { get; set; }
+        [UelParam("P31", Table = "Bolt Qty X"), Category("3. Bolt"), DisplayName("P31 Bolt Q'ty x")] public int BoltQtyX { get; set; }
+        [UelParam("P32", Table = "Bolt Dist X"), Category("3. Bolt"), DisplayName("P32 Bolt distance x")] public double BoltDistX { get; set; }
+        [UelParam("P34", Table = "Bolt Qty Y"), Category("3. Bolt"), DisplayName("P34 Bolt Q'ty y")] public int BoltQtyY { get; set; }
+        [UelParam("P43", Table = "Bolt Dist Y"), Category("3. Bolt"), DisplayName("P43 Bolt distance y")] public double BoltDistY { get; set; }
+        [UelParam("P44", Table = "Bolt Edge X"), Category("3. Bolt"), DisplayName("P44 Bolt to Gp_x (eH)")] public double BoltEdgeX { get; set; }
+        [UelParam("P45", Table = "Bolt Edge Y"), Category("3. Bolt"), DisplayName("P45 Bolt to Gp_y (eV)")] public double BoltEdgeY { get; set; }
+        [UelParam("P38_diameter", Table = "Bolt Size"), Category("3. Bolt"), DisplayName("P38 Bolt size")] public double BoltSize { get; set; }
+        [UelParam("P38_screwdin", Table = "Bolt Standard"), Category("3. Bolt"), DisplayName("P38 Bolt standard")] public string BoltStandard { get; set; }
+        [UelParam("P40", Table = "Tolerance"), Category("3. Bolt"), DisplayName("P40 Tolerance")] public double Tolerance { get; set; }
+        [UelParam("P39", Table = "Slotted Hole X"), Category("3. Bolt"), DisplayName("P39 Slotted hole X")] public double SlotX { get; set; }
+        [UelParam("P41", Table = "Slotted Hole Y"), Category("3. Bolt"), DisplayName("P41 Slotted hole Y")] public double SlotY { get; set; }
 
         // ---------------- FB / weld
-        [UelParam("P52"), Category("4. FB & Weld"), DisplayName("P52 FB (Y/N)")] public bool FlatBar { get; set; }
-        [UelParam("P11"), Category("4. FB & Weld"), DisplayName("P11 FB Mark")] public string FlatBarMark { get; set; }
-        [UelParam("P5"), Category("4. FB & Weld"), DisplayName("P5  FB Mat.")] public string FlatBarMat { get; set; }
+        [UelParam("P52", Table = "Flat Bar"), Category("4. FB & Weld"), DisplayName("P52 FB (Y/N)")] public bool FlatBar { get; set; }
+        [UelParam("P11", Table = "FB Mark"), Category("4. FB & Weld"), DisplayName("P11 FB Mark")] public string FlatBarMark { get; set; }
+        [UelParam("P5", Table = "FB Mat"), Category("4. FB & Weld"), DisplayName("P5  FB Mat.")] public string FlatBarMat { get; set; }
         /// BIẾN MỚI, không có trong .uel gốc (người dùng 17/11/2026). Gốc chỉ có chuỗi "25*9".
-        [UelParam("P55"), Category("4. FB & Weld"), DisplayName("P55 FB Profile")] public string FlatBarProfile { get; set; }
+        [UelParam("P55", Table = "FB Profile"), Category("4. FB & Weld"), DisplayName("P55 FB Profile")] public string FlatBarProfile { get; set; }
         [Category("4. FB & Weld"), DisplayName("FB Class (gia dinh)")] public int FlatBarClass { get; set; }
-        [UelParam("P10"), Category("4. FB & Weld"), DisplayName("P10 FLG. Weld gap")] public double FlangeWeldGap { get; set; }
-        [UelParam("P12"), Category("4. FB & Weld"), DisplayName("P12 Weld Angle")] public double WeldAngle { get; set; }
-        [UelParam("P51"), Category("4. FB & Weld"), DisplayName("P51 Top Scallop (Y/N)")] public bool TopScallop { get; set; }
-        [UelParam("P53"), Category("4. FB & Weld"), DisplayName("P53 Bott Scallop (Y/N)")] public bool BottScallop { get; set; }
+        [UelParam("P10", Table = "Flange Weld Gap"), Category("4. FB & Weld"), DisplayName("P10 FLG. Weld gap")] public double FlangeWeldGap { get; set; }
+        [UelParam("P12", Table = "Weld Angle"), Category("4. FB & Weld"), DisplayName("P12 Weld Angle")] public double WeldAngle { get; set; }
+        [UelParam("P51", Table = "Top Scallop"), Category("4. FB & Weld"), DisplayName("P51 Top Scallop (Y/N)")] public bool TopScallop { get; set; }
+        [UelParam("P53", Table = "Bott Scallop"), Category("4. FB & Weld"), DisplayName("P53 Bott Scallop (Y/N)")] public bool BottScallop { get; set; }
 
         // ---------------- Hằng số chưa có trong hộp thoại gốc
         [Category("5. Gia dinh (khong co trong hop thoai)"), DisplayName("FB dai them moi dau")] public double FlatBarExtend { get; set; }

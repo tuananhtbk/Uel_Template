@@ -2,6 +2,7 @@
 
 Áp dụng cho mọi component chuyển từ `.uel` (custom component Tekla 18.0) sang plugin C#, từ `RAKER+T_GIRDER` trở về sau.
 Người và Claude đều làm theo file này. Cách dùng lệnh xem [README.md](README.md).
+**Bản tóm tắt nguyên tắc và bài học rút ra từ RAKER+T_GIRDER: [NGUYEN_TAC_TU_RAKER.md](NGUYEN_TAC_TU_RAKER.md). Đọc trước khi làm component mới.**
 Trao đổi với người dùng bằng **tiếng Việt**.
 Người dùng mô tả yêu cầu theo [MAU_YEU_CAU.md](MAU_YEU_CAU.md): từ vựng hướng/trục, mẫu sửa, mẫu component mới, JSON hình dạng chuẩn.
 Khi có file JSON hình dạng chuẩn thì coi đó là chuẩn: dựng theo đúng file đó, chỗ nào khác bản gốc thì ghi vào mục "Giả định".
@@ -87,7 +88,10 @@ File `_Dev\Export\*.json` (nút "Xuat JSON component" của EXE) chứa đủ d�
 - Hàm này đọc được cả cp949 lẫn UTF-8. Khoá được chuẩn hoá: không phân biệt hoa thường, bỏ dấu cách, `x` giữa 2 chữ số thành `*`.
 - **Bảng bắt buộc** (bảng của `.uel` gốc, gọi bằng `fVF`): không tìm thấy bảng hoặc dòng thì ghi log rõ tên file và khoá đang tìm, rồi dừng. Không tự điền số.
 - **Bảng tuỳ chọn theo profile Part 2** (người dùng thêm, như RAKER P56/P57): không có bảng hoặc dòng thì dùng giá trị hộp thoại và ghi `CANH BAO`. Cột có trong bảng thì **đè** giá trị hộp thoại. Muốn tắt bảng cho một liên kết thì đặt ô "Dung bang tra" = No.
-- Bảng mẫu đặt tại `Plugin\<Ten>\<Ten>.txt`. `install.bat` chép bảng này vào thư mục plugin của Tekla nếu ở đó chưa có. Thứ tự tìm bảng: thư mục model → `XS_PROJECT` → `XS_FIRM` → thư mục plugin.
+- Bảng mẫu đặt tại `Plugin\<Ten>\<Ten>.txt`. `install.bat` chép bảng này vào thư mục plugin của Tekla nếu ở đó chưa có.
+- **Bảng tuỳ chọn lưu trong model** (người dùng 18/11/2026, `LookupTable.ResolveInModel`): model có file cùng tên thì luôn dùng bản trong model. Chưa có thì tìm file nguồn (đường dẫn đầy đủ, hoặc `XS_PROJECT` → `XS_FIRM` → thư mục plugin) rồi chép 1 bản vào model. Không ghi đè file trong model.
+- **Tên cột bảng tra dễ đọc** (người dùng 18/11/2026): mỗi biến trong `Params.cs` khai báo `[UelParam("P1", Table = "Base Plate Thk")]`, tên theo nhãn hộp thoại, không trùng nhau. File bảng mẫu dùng tên này làm tiêu đề và liệt kê đủ tên ở phần ghi chú đầu file. Tên biến P vẫn được nhận.
+- Ô chọn file bảng tra dùng kiểu `file_in` trong `.inp` (có nút "..."), ví dụ `parameter("", "P56", file_in, text, x, y, w)`.
 
 ### Ngôn ngữ và tương thích
 - Viết bằng **C# 4 / .NET 4.0**, vì build bằng csc v4. **Không dùng:**

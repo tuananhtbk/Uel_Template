@@ -223,7 +223,7 @@ internal static class VeHinh
         p.Extra.Add(Label("Mark", x, y + 105)); p.Extra.Add(Param("P4", "string", "text", x + 120, y + 105, 120));
         // Bảng tra theo profile Part 2 (biến mới 17/11/2026): cột có trong bảng đè giá trị hộp thoại
         p.Extra.Add(Label("Bang tra theo profile Part 2", x, y + 170));
-        p.Extra.Add(Label("File (trong = RAKER+T_GIRDER.txt)", x, y + 200)); p.Extra.Add(Param("P56", "string", "text", x, y + 222, 300));
+        p.Extra.Add(Label("File (trong = RAKER+T_GIRDER.txt)", x, y + 200)); p.Extra.Add(Param("P56", "file_in", "text", x, y + 222, 300));   // file_in = ô có nút "..." chọn file (18/11/2026)
         p.Extra.Add(Label("Dung bang tra", x, y + 262)); p.Extra.Add(Param("P57", "YesNo", "number", x + 120, y + 262, 120));
         return p;
     }

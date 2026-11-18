@@ -408,6 +408,7 @@ namespace UEL.Tester
                     _status.Text = "Da noi voi Tekla. Model: " + _model.GetInfo().ModelName + "   |  " + Program.InstanceInfo +
                                    "   |  API: " + Program.ApiDir;
                     _status.ForeColor = Color.DarkGreen;
+                    try { InpView.ModelDir = _model.GetInfo().ModelPath; } catch (Exception) { }   // nút "..." mở ở thư mục model
                     return true;
                 }
             }

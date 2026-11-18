@@ -23,6 +23,9 @@ namespace UEL.Core
     {
         public UelParamAttribute(string name) { Name = name; }
         public string Name { get; private set; }
+        /// Tên cột dễ đọc trong bảng tra (vd. "Base Plate Thk"), dùng thay cho tên biến P (18/11/2026).
+        /// So khớp không phân biệt hoa thường, bỏ dấu cách và dấu . _ - '. Để trống = chỉ nhận tên biến P.
+        public string Table { get; set; }
     }
 
     public abstract class UelComponent
