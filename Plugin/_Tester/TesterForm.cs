@@ -1,6 +1,8 @@
 // Cửa sổ thử nghiệm chung: chọn component -> chỉnh thông số -> chọn cấu kiện -> dựng / dựng lại / xoá.
 // Đối tượng tạo ra là đối tượng thường trong model (không phải component) -> dùng nút "Xoa ket qua" để dọn.
 // Mỗi lần dựng, EXE kiểm tra các file _Dev\<bản>\*.Core.dll: file nào vừa build lại thì nạp bản mới, giữ nguyên thông số đang nhập.
+// Nút "Build Core + dung lai" (18/11/2026): chạy build.bat core <Ten> <bộ> rồi nạp Core mới và dựng lại.
+// Tab "Knobs": chỉnh các số trong khối // <KNOBS> của .cs, xem ngay trong Tekla, ghi lại vào .cs (xem KnobPanel.cs).
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,6 +25,10 @@ namespace UEL.Tester
         private readonly TabControl _views = new TabControl();
         private readonly TabPage _dialogPage = new TabPage("Hop thoai");
         private readonly TabPage _gridPage = new TabPage("Bang thong so (tat ca, ke ca gia dinh)");
+        private readonly TabPage _knobPage = new TabPage("Knobs (so hinh hoc trong code)");
+        private readonly KnobPanel _knobs;
+        private Button _buildBtn;
+        private System.Diagnostics.Process _buildProc;   // build.bat core dang chay (null = khong)
         private InpView _inp;            // hộp thoại vẽ từ .inp của component đang chọn
         private string _inpKey;
         private string _inpStamp;        // đường dẫn + thời điểm file DLL chứa .inp (đổi thì vẽ lại)
@@ -72,6 +78,8 @@ namespace UEL.Tester
             buttons.Padding = new Padding(4);
             AddButton(buttons, "1. Chon cau kien va dung", OnPickAndBuild, 190);
             AddButton(buttons, "2. Dung lai (giu cau kien da chon)", OnRebuild, 220);
+            _buildBtn = AddButton(buttons, "Build Core + dung lai", OnBuildCore, 150);
+            AddButton(buttons, "Ghi bang thong so vao Params.cs", OnWriteParams, 210);
             AddButton(buttons, "Xoa ket qua vua dung", OnDelete, 150);
             AddButton(buttons, "Tra ve mac dinh", OnReset, 120);
             AddButton(buttons, "Mo file log", OnOpenLog, 100);
@@ -94,6 +102,9 @@ namespace UEL.Tester
             _views.Dock = DockStyle.Fill;
             _views.TabPages.Add(_dialogPage);
             _views.TabPages.Add(_gridPage);
+            _knobs = new KnobPanel(AppendLog, delegate { OnRebuild(this, EventArgs.Empty); }, delegate { StartBuildCore(); });
+            _knobPage.Controls.Add(_knobs);
+            _views.TabPages.Add(_knobPage);
             _views.SelectedIndexChanged += delegate { if (_views.SelectedTab == _gridPage) _grid.Refresh(); };
 
             _log.Dock = DockStyle.Bottom;
@@ -125,7 +136,7 @@ namespace UEL.Tester
             get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Program.CoreTarget); }
         }
 
-        private static void AddButton(Control parent, string text, EventHandler click, int width)
+        private static Button AddButton(Control parent, string text, EventHandler click, int width)
         {
             Button b = new Button();
             b.Text = text;
@@ -133,6 +144,147 @@ namespace UEL.Tester
             b.Height = 28;
             b.Click += click;
             parent.Controls.Add(b);
+            return b;
+        }
+
+        /// Plugin\ (thư mục cha của _Dev).
+        private static string PluginRoot
+        {
+            get { return Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\')); }
+        }
+
+        // ---------------------------------------------------------------- Ghi mặc định vào Params.cs
+
+        /// Ghi các giá trị đã đổi ở tab "Bang thong so" thành mặc định trong Params.cs (xem ParamsWriter.cs), rồi build Core.
+        private void OnWriteParams(object sender, EventArgs e)
+        {
+            if (!EnsureCore() || _key == null || _params == null) return;
+            string cls = _params.GetType().Name;
+            string file = ParamsWriter.FindFile(Path.Combine(PluginRoot, _key), cls);
+            if (file == null) { AppendLog("Khong thay file .cs co ham khoi tao " + cls + "() trong Plugin\\" + _key); return; }
+
+            List<ParamChange> changes;
+            try { changes = ParamsWriter.Diff(_params, _core.NewParams(_key), file); }
+            catch (Exception ex) { AppendLog("Loi doc " + file + ": " + ex.Message); return; }
+            if (changes == null) { AppendLog("Khong doc duoc ham khoi tao " + cls + "() trong " + file); return; }
+            if (changes.Count == 0)
+            {
+                AppendLog("Bang thong so giong mac dinh trong " + Path.GetFileName(file) + " -> khong co gi de ghi." +
+                          " (Chi ghi tab 'Bang thong so'; o nhap trong tab 'Hop thoai' khong tinh.)");
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            int ok = 0;
+            foreach (ParamChange c in changes) if (c.Skip == null) ok++;
+            sb.AppendLine("Ghi " + ok + " gia tri vao " + _key + "\\" + Path.GetFileName(file) + " (mac dinh):");
+            sb.AppendLine();
+            foreach (ParamChange c in changes)
+                if (c.Skip == null) sb.AppendLine("  " + c.Label + ":   " + c.OldText + "  ->  " + c.NewText + "   (dong " + c.Line + ")");
+            bool anySkip = false;
+            foreach (ParamChange c in changes)
+            {
+                if (c.Skip == null) continue;
+                if (!anySkip) { sb.AppendLine(); sb.AppendLine("KHONG ghi:"); anySkip = true; }
+                sb.AppendLine("  " + c.Label + " = " + c.NewText + ": " + c.Skip);
+            }
+            if (ok == 0)
+            {
+                foreach (string l in sb.ToString().Split('\n')) if (l.Trim().Length > 0) AppendLog(l.TrimEnd('\r'));
+                AppendLog("Khong co gia tri nao ghi duoc.");
+                return;
+            }
+            sb.AppendLine();
+            sb.AppendLine("CANH BAO: moi lien ket " + _key + " da co trong model ma de TRONG cac o nay se doi hinh hoc");
+            sb.AppendLine("o lan Modify / dung lai tiep theo (ke ca model cu), khi Core / DLL moi duoc dung.");
+            sb.AppendLine("Mac dinh cu (theo .uel goc) duoc ghi chu cuoi dong; nho ghi vao README muc 'Gia dinh'.");
+            sb.AppendLine();
+            sb.AppendLine("Sau khi ghi: build Core. Ban DLL cai trong Tekla chi doi khi build ban phat hanh / _DEV.");
+            if (MessageBox.Show(this, sb.ToString(), "Ghi mac dinh vao Params.cs", MessageBoxButtons.OKCancel,
+                                MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.OK)
+            {
+                AppendLog("Da huy ghi Params.cs.");
+                return;
+            }
+            try
+            {
+                int n = ParamsWriter.Write(file, cls, changes, AppendLog);
+                AppendLog("Params: da ghi " + n + " gia tri vao " + file);
+                if (n > 0) StartBuildCore();
+            }
+            catch (Exception ex) { AppendLog("Loi ghi " + file + ": " + ex.Message); }
+        }
+
+        // ---------------------------------------------------------------- Build Core
+
+        private void OnBuildCore(object sender, EventArgs e)
+        {
+            StartBuildCore();
+        }
+
+        /// Chạy  _Tools\build.ps1 core <Ten> <bộ>  (chỉ Core của component đang chọn, đúng bộ của Tekla đang nối).
+        /// Xong mà thành công: nạp Core mới, cập nhật hộp thoại, dựng lại nếu đã chọn cấu kiện.
+        private void StartBuildCore()
+        {
+            if (_key == null) { AppendLog("Chua chon component."); return; }
+            if (_buildProc != null) { AppendLog("Dang build, doi xong da."); return; }
+            string ps1 = Path.Combine(PluginRoot, @"_Tools\build.ps1");
+            if (!File.Exists(ps1)) { AppendLog("Khong thay " + ps1); return; }
+            string target = Program.CoreTarget == "2020+" ? "2020" : "18";
+            string key = _key;
+
+            System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo("powershell.exe",
+                "-NoProfile -ExecutionPolicy Bypass -File \"" + ps1 + "\" core \"" + key + "\" " + target);
+            si.UseShellExecute = false;
+            si.CreateNoWindow = true;
+            si.RedirectStandardOutput = true;
+            si.RedirectStandardError = true;
+            si.WorkingDirectory = PluginRoot;
+            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            p.StartInfo = si;
+            p.EnableRaisingEvents = true;
+            p.OutputDataReceived += delegate(object s, System.Diagnostics.DataReceivedEventArgs a) { if (a.Data != null) AppendLog("  " + a.Data); };
+            p.ErrorDataReceived += delegate(object s, System.Diagnostics.DataReceivedEventArgs a) { if (a.Data != null) AppendLog("  " + a.Data); };
+            p.Exited += delegate
+            {
+                int code = p.ExitCode;
+                BeginInvoke(new Action(delegate { AfterBuildCore(key, code); }));
+            };
+            AppendLog("---- build.bat core " + key + " " + target + " ----");
+            _buildBtn.Enabled = false;
+            _buildBtn.Text = "Dang build...";
+            _buildProc = p;
+            try
+            {
+                p.Start();
+                p.BeginOutputReadLine();
+                p.BeginErrorReadLine();
+            }
+            catch (Exception ex)
+            {
+                _buildProc = null;
+                AppendLog("Khong chay duoc build: " + ex.Message);
+                _buildBtn.Enabled = true;
+                _buildBtn.Text = "Build Core + dung lai";
+            }
+        }
+
+        private void AfterBuildCore(string key, int code)
+        {
+            if (_buildProc != null) { try { _buildProc.WaitForExit(); _buildProc.Dispose(); } catch { } }
+            _buildProc = null;
+            _buildBtn.Enabled = true;
+            _buildBtn.Text = "Build Core + dung lai";
+            if (code != 0)
+            {
+                AppendLog("BUILD LOI (xem dong csc o tren) -> van dung Core cu.");
+                return;
+            }
+            AppendLog("Build xong.");
+            if (!EnsureCore()) return;
+            if (_key != key) return;
+            if (_primary != null && Connect()) OnRebuild(this, EventArgs.Empty);
+            else AppendLog("Chua chon cau kien -> bam nut 1 de dung.");
         }
 
         private void AppendLog(string line)
@@ -147,8 +299,27 @@ namespace UEL.Tester
         private bool EnsureCore()
         {
             bool ok = EnsureCoreFiles();
-            if (ok) RefreshDialog();
+            if (ok)
+            {
+                RefreshDialog();
+                SyncKnobs();
+            }
             return ok;
+        }
+
+        private string _knobKey;
+
+        /// Tab Knobs theo component đang chọn. Cùng component thì quét lại .cs (giữ số đang chỉnh nếu chưa ghi).
+        private void SyncKnobs()
+        {
+            if (_key == null) return;
+            if (_knobKey != _key)
+            {
+                _knobKey = _key;
+                _knobs.LoadComponent(Path.Combine(PluginRoot, _key));
+            }
+            else _knobs.Rescan(false);
+            _knobPage.Text = "Knobs (" + _knobs.Knobs.Count + ")" + (_knobs.Dirty ? " *" : "");
         }
 
         /// Nạp (hoặc nạp lại nếu vừa build) mọi file *.Core.dll trong CoreDir. Giữ nguyên thông số đang nhập.
@@ -235,6 +406,7 @@ namespace UEL.Tester
             _secondaries.Clear();
             AppendLog("Component: " + it);
             RefreshDialog();
+            SyncKnobs();
         }
 
         // ---------------------------------------------------------------- Hộp thoại (.inp)
@@ -474,6 +646,15 @@ namespace UEL.Tester
             try
             {
                 ArrayList created = new ArrayList();
+                if (_knobs.Knobs.Count > 0)
+                {
+                    // gán số đang chỉnh ở tab Knobs vào Core đang nạp (không cần biên dịch)
+                    int n = KnobSource.Apply(_knobs.Knobs, _core.Assembly, AppendLog);
+                    int dirty = 0;
+                    foreach (Knob k in _knobs.Knobs) if (k.Dirty) dirty++;
+                    if (dirty > 0) AppendLog("Knobs: gan " + n + " gia tri, " + dirty + " khac .cs (chua ghi).");
+                    _knobPage.Text = "Knobs (" + _knobs.Knobs.Count + ")" + (dirty > 0 ? " *" : "");
+                }
                 bool ok = _core.Build(_key, prm, _model, _primary, new ArrayList(_secondaries), created);
                 _last = created;
                 _model.CommitChanges();

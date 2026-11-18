@@ -78,15 +78,20 @@ namespace UEL.Core
         {
             UelComponent c = Find(key);
             Logger.Log(string.Format("==== {0} (Core {1}) ====", key, BuildStamp()));
+            Logger.BeginRun();
+            bool ok;
             try
             {
-                return c.Build(model, prm, primary, secondaries ?? new ArrayList(), created ?? new ArrayList());
+                ok = c.Build(model, prm, primary, secondaries ?? new ArrayList(), created ?? new ArrayList());
             }
             catch (Exception ex)
             {
                 Logger.Log("Loi: " + ex);
-                return false;
+                ok = false;
             }
+            // Lỗi chặn dựng (Logger.Error: bảng tra, girder/plate/bolt size...) -> hiện thông báo (18/11/2026).
+            if (!ok) Logger.ShowErrors(key);
+            return ok;
         }
     }
 }

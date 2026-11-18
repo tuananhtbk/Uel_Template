@@ -1,0 +1,67 @@
+# COL_TO_HAUNCH_GIRDER.txt - bang tra cua plugin COL_TO_HAUNCH_GIRDER (tu YGY-HAUNCH_Moment.txt cua .uel goc)
+# Dinh dang: phan cach TAB, xuong dong CRLF, ma UTF-8 hoac cp949. Dong bat dau bang # la ghi chu.
+# Dong dau tien khong phai ghi chu la TIEU DE. Moi dong sau la 1 profile dam haunch (Part 2).
+#
+# COT BAT BUOC (doc theo VI TRI cot, giong COL_TO_GIRDER - khong chen / doi cho cac cot 1..7):
+#   1  Girder Size : profile dam, vd HUN700-488*300*11*30 (khong phan biet hoa thuong; x = *)
+#   2  L3          : CGP dai doc dam (P47). .uel: CGP tu mat cot toi 1_GAP+5+160 -> 165 khi khe = 5
+#   3  B3          : CGP cao (P19) = cot B3 cua bang goc
+#   4  t3          : CGP day (P17) = cot T3 cua bang goc
+#   5  WING PL     : WP (GWP) dai (P28) = cot L1 (WING_L1) cua bang goc; 0 = khong co WP
+#   6  t2          : cot T2 cua bang goc (chi de tham khao, plugin khong doc)
+#   7  BOLT ROW    : so khoang bu long (P18): 1 khi H < 900, 2 khi H >= 900 (.uel: BOLT_X_DIST theo VAR4 = 900)
+#
+# COT TUY CHON (doc theo TEN cot, dat sau cot 7; o trong = dung o hop thoai / cong thuc):
+#   e        : bu long -> canh ngoai CGP (P4); .uel: BOLT_ST = 80
+#   L1       : WP doan rong toi mep cot, do tu mat cot (P81)
+#   tip      : WP be rong dau xa ngoai mep canh (P82)
+#   TOP2BOLT : mat ngoai canh tren -> hang bu long tren (P99) = cot TOP2BOLT cua bang goc (BOLT_TOP).
+#              Mep tren CGP = TOP2BOLT - P21A/2. Trong = CGP dat giua chieu cao dam tai mat cot.
+# Cot Ht, Ht_thk, REMARK: chi de tham khao (.uel khong doc).
+#
+# O hop thoai co nhap thi THANG bang tra. Ghi so dang 12.5 (dau cham).
+Girder Size	L3	B3	t3	WING PL	t2	BOLT ROW	e	L1	tip	TOP2BOLT	Ht	Ht_thk	REMARK
+HUN450-350*200*6*11	165	350	20	0	0	1	80			90	0	0	P-BOX/S-111
+HUN450-350*200*6*12	165	350	20	0	0	1	80			90	0	0	P-BOX/S-111
+HUN500-400*200*8*18	165	400	20	0	0	1	80			90	0	0	P-BOX/S-111
+HUN550-396*200*8*20	165	450	20	0	0	1	80			90	0	0	P-BOX/S-111
+HUN550-400*200*8*15	165	400	20	0	0	1	80			115	0	0	P-BOX/S-111
+HUN600-400*200*8*20	165	450	20	0	0	1	80			115	0	0	P-BOX/S-111
+HUN600-450*300*9*32	165	450	20	0	0	1	80			115	0	0	P-BOX/S-111
+HUN650-450*200*9*20	165	500	20	0	0	1	80			115	0	0	P-BOX/S-111
+HUN650-450*200*9*25	165	500	20	0	0	1	80			115	0	0	P-BOX/S-111
+HUN700-450*250*9*20	165	490	24	0	0	1	80			145	200	24	P-BOX/S-111
+HUN700-450*250*9*22	165	480	24	0	0	1	80			150	200	24	P-BOX/S-111
+HUN700-488*300*11*30	165	490	24	0	0	1	80			145	200	24	P-BOX/S-111
+HUN700-488*300*15*20	165	510	24	0	0	1	80			135	200	24	P-BOX/S-111
+HUN700-488*300*15*30	165	490	24	0	0	1	80			145	200	24	P-BOX/S-111
+HUN700-488*300*20*35	165	480	24	0	0	1	80			150	350	24	P-BOX/S-111
+HUN700-500*200*10*16	165	560	24	0	0	1	80			110	0	0	P-BOX/S-111
+HUN700-500*200*10*20	165	560	24	0	0	1	80			110	0	0	P-BOX/S-111
+HUN700-500*200*10*25	165	550	24	0	0	1	80			115	0	0	P-BOX/S-111
+HUN700-500*200*10*28	165	540	24	0	0	1	80			120	0	0	P-BOX/S-111
+HUN700-500*200*10*30	165	540	24	0	0	1	80			120	0	0	P-BOX/S-111
+HUN700-596*200*10*18	165	600	24	0	0	1	80			90	0	0	P-BOX/S-111
+HUN750-582*300*12*30	165	600	24	0	0	1	80			115	0	0	P-BOX/S-111
+HUN750-582*300*15*25	165	600	24	0	0	1	80			115	200	24	P-BOX/S-111
+HUN750-588*300*15*25	165	600	24	0	0	1	80			115	200	24	P-BOX/S-111
+HUN750-600*200*11*17	165	600	24	0	0	1	80			115	0	0	P-BOX/S-111
+HUN750-600*200*11*30	165	600	24	0	0	1	80			115	0	0	P-BOX/S-111
+HUN750-600*200*11*35	165	600	24	0	0	1	80			115	0	0	P-BOX/S-111
+HUN800-582*300*12*30	165	630	24	0	0	1	80			125	200	24	P-BOX/S-111
+HUN800-588*300*12*26	165	630	24	0	0	1	80			125	200	24	P-BOX/S-111
+HUN800-600*200*10*26	165	660	24	0	0	1	80			110	0	0	P-BOX/S-111
+HUN800-600*200*11*20	165	660	24	0	0	1	80			110	0	0	P-BOX/S-111
+HUN800-606*200*12*35	165	660	24	0	0	1	80			110	0	0	P-BOX/S-111
+HUN850-600*300*15*25	165	660	24	0	0	1	80			135	200	24	P-BOX/S-111
+HUN900-700*300*13*28	165	660	24	0	0	2	80			160	0	0	P-BOX/S-111
+HUN900-700*300*13*30	165	660	24	0	0	2	80			160	0	0	P-BOX/S-111
+HUN900-708*300*15*38	165	660	24	0	0	2	80			160	0	0	P-BOX/S-111
+HUN1000-692*300*16*28	165	780	24	0	0	2	80			150	200	24	P-BOX/S-111
+HUN1000-700*300*13*24	165	800	24	0	0	2	80			140	0	0	P-BOX/S-111
+HUN1000-700*300*13*35	165	800	24	0	0	2	80			140	0	0	P-BOX/S-111
+HUN1000-700*400*13*30	165	790	24	0	0	2	80			145	200	24	P-BOX/S-111
+HUN1000-792*300*14*32	165	790	24	0	0	2	80			145	200	24	P-BOX/S-111
+HUN1000-792*300*14*40	165	790	24	0	0	2	80			145	200	24	P-BOX/S-111
+HUN1200-700*400*18*38	165	870	24	0	0	2	80			205	200	24	P-BOX/S-111
+HUN1200-792*300*14*40	165	870	24	0	0	2	80			205	200	24	P-BOX/S-111

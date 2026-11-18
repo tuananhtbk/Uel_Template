@@ -3,6 +3,7 @@
 # O trong = giu gia tri hop thoai. Cot REMARK duoc bo qua. Cot sai ten: bo qua va ghi CANH BAO vao log.
 # Dong khoa "*" (neu them) = dong mac dinh cho profile khong co trong bang.
 # Ten cot (khong phan biet hoa thuong, dau cach tuy y; ghi ten bien P1, P20... nhu cu cung duoc):
+#   Base Plate Thk Source (P58: 0 = day canh Part 1, 1 = day canh Part 2, 2 = cot Base Plate Thk),
 #   Base Plate Thk (P1), Base Plate Mat (P2), Base Plate Class (P3), Base Plate Mark (P4),
 #   Top Gap (P6), Left Gap (P7), Bott Gap (P8), Right Gap (P19),
 #   Conn Type (P13), Gusset Thk (P20), Gusset Mat (P22), Gusset Mark (P21), Gusset Class (P23), Gusset L or R (P24),

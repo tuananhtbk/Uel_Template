@@ -187,7 +187,10 @@ namespace UEL.Core
         // ------------------------------------------------------------------ gán vào Params
 
         /// Tìm bảng, tìm dòng theo khoá, gán các cột trùng tên biến [UelParam] vào prm (bỏ qua tên trong "skip").
-        /// Trả về các biến đã gán (tên -> giá trị chuỗi), rỗng nếu không dùng được bảng. Mọi bước đều ghi log.
+        /// Trả về các biến đã gán (tên -> giá trị chuỗi).
+        /// Người dùng 18/11/2026: không có bảng / không đọc được / không có dòng khoá / ô không đúng kiểu (vd. "M24" ở cột
+        /// Bolt Size) -> Logger.Error và trả về null: component KHÔNG được dựng (không lùi về giá trị hộp thoại nữa).
+        /// Ô trống vẫn là "giữ giá trị hộp thoại" (vd. Gusset Length trống = tự tính).
         public static Hashtable ApplyByKey(object prm, string fileOrPath, string defaultFile, string modelPath, string key,
                                            params string[] skip)
         {
@@ -197,22 +200,22 @@ namespace UEL.Core
             string path = ResolveInModel(want, modelPath, tried);
             if (path == null)
             {
-                Logger.Log("CANH BAO: khong tim thay bang tra '" + want + "' -> dung gia tri hop thoai. Da tim: " + string.Join(" | ", tried.ToArray()));
-                return applied;
+                Logger.Error("Khong tim thay bang tra '" + want + "'. Da tim: " + string.Join(" | ", tried.ToArray()));
+                return null;
             }
             LookupTable t;
             try { t = Load(path); }
             catch (Exception ex)
             {
-                Logger.Log("CANH BAO: khong doc duoc bang tra " + path + ": " + ex.Message + " -> dung gia tri hop thoai.");
-                return applied;
+                Logger.Error("Khong doc duoc bang tra " + path + ": " + ex.Message);
+                return null;
             }
             string matched;
             string[] row = t.FindRow(key, out matched);
             if (row == null)
             {
-                Logger.Log("CANH BAO: bang tra " + path + " khong co dong '" + key + "' (va khong co dong '*') -> dung gia tri hop thoai.");
-                return applied;
+                Logger.Error("Bang tra " + path + " khong co dong '" + key + "'. Them dong nay vao bang (hoac tat bang tra) roi Modify.");
+                return null;
             }
 
             // Tiêu đề cột: tên biến P ("P1"), tên dễ đọc ([UelParam(Table = "Base Plate Thk")]),
@@ -229,6 +232,7 @@ namespace UEL.Core
             List<string> skipList = new List<string>(skip ?? new string[0]);
             List<string> unknown = new List<string>();
             Hashtable values = new Hashtable();
+            bool bad = false;
             for (int i = 1; i < t.Header.Length && i < row.Length; i++)
             {
                 string col = t.Header[i];
@@ -247,8 +251,18 @@ namespace UEL.Core
                 bool skipIt = false;
                 foreach (string s in skipList) if (string.Equals(s, pname, StringComparison.OrdinalIgnoreCase)) skipIt = true;
                 if (skipIt) continue;
+                // ô phải đổi được sang kiểu của biến (số cho thickness / bolt size...), không thì dừng
+                try { ParamMapper.ConvertTo(row[i], pi.PropertyType); }
+                catch (Exception)
+                {
+                    Logger.Error("Bang tra " + path + ", dong '" + matched + "', cot '" + col + "': gia tri '" + row[i] +
+                                 "' khong hop le (can " + (pi.PropertyType == typeof(string) ? "chu" : "so") + ").");
+                    bad = true;
+                    continue;
+                }
                 values[pname] = row[i];
             }
+            if (bad) return null;
             ParamMapper.Apply(prm, values);
             StringBuilder sb = new StringBuilder();
             foreach (DictionaryEntry e in values) { applied[e.Key] = e.Value; sb.Append(e.Key).Append('=').Append(e.Value).Append(' '); }

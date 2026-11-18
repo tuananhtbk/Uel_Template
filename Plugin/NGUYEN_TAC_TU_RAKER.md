@@ -72,10 +72,13 @@ Làm theo [CLAUDE.md](CLAUDE.md) mục 4.4. Các bài học đã trả giá ở 
 
 1. Thêm 2 biến mới: **file bảng tra** (`file_in`, có nút "...") và **dùng bảng tra** (Yes/No, mặc định Yes). Đặt ở tab đầu, cạnh hình.
 2. Gọi `LookupTable.ApplyByKey(...)` trên **bản sao** của Params. Bỏ qua chính 2 biến đó. Mẫu ở `RAKER+T_GIRDER\Component.cs`.
-3. **Bảng lưu trong model, ưu tiên bản trong model:**
-   - model đã có file cùng tên thì luôn dùng file đó;
-   - chưa có thì tìm file nguồn (đường dẫn đầy đủ, hoặc `XS_PROJECT` → `XS_FIRM` → thư mục plugin), rồi chép 1 bản vào thư mục model;
-   - không bao giờ ghi đè file trong model.
+3. **BẮT BUỘC: mặc định và ưu tiên dùng file txt trong thư mục model** (người dùng 18/11/2026; dữ liệu rất quan trọng, không được sơ sót hay nhầm file). Luôn gọi `LookupTable.ResolveInModel` (qua `ApplyByKey`), không tự viết đường tìm file khác:
+   - model đã có file cùng tên thì luôn dùng file đó, kể cả khi ô file chọn chỗ khác. Log ghi rõ là đang dùng bản trong model;
+   - chưa có thì tìm file nguồn (đường dẫn đầy đủ, hoặc `XS_PROJECT` → `XS_FIRM` → thư mục plugin), rồi chép 1 bản vào thư mục model và dùng bản đó;
+   - không bao giờ ghi đè file trong model;
+   - mỗi lần chạy, log ghi đường dẫn đầy đủ của file đã dùng, dòng khớp và các biến đã gán.
+   - README của component phải có mục **"Tắt plugin / tắt model rồi mở lại"**: file nào được dùng, sửa file ngoài thì model không nhận, muốn đổi bảng thì sửa file trong model hoặc xoá để chép lại. Mẫu ở README của RAKER.
+   - Quy tắc này áp dụng cho **mọi** bảng tra của component mới, cả bảng bắt buộc của `.uel` gốc (`fVF`). Không bao giờ sửa file gốc trong `File goc\` hay `UEL\`; chỉ chép sang model.
 4. Ô file để trống thì dùng `<Ten>.txt`. Đặt bảng mẫu `Plugin\<Ten>\<Ten>.txt`; `install.bat` tự chép vào thư mục plugin của Tekla.
 5. Định dạng: TAB, CRLF, dòng `#` là ghi chú. Cột đầu là profile Part 2 (không phân biệt hoa thường, `x` = `*`). Dòng `*` là dòng mặc định. Ô trống = giữ giá trị hộp thoại.
 6. **Tiêu đề cột dùng tên dễ đọc** (`Base Plate Thk`, `Bolt Size`…). Phần ghi chú đầu file liệt kê đủ tên, kèm tên biến trong ngoặc. Tên `P1` cũ vẫn được nhận.
@@ -127,6 +130,7 @@ Theo mẫu `RAKER+T_GIRDER\README.md`, có đủ các mục:
 - [ ] Đủ biến của `.inp` gốc, tên khớp; EXE không có ô vàng.
 - [ ] Có hình minh hoạ, ô nằm đúng chỗ trên hình.
 - [ ] Mỗi biến có tên cột bảng tra (`Table = "..."`).
+- [ ] Mọi bảng tra tìm qua `LookupTable.ResolveInModel` (ưu tiên file trong model, chép 1 bản, không ghi đè). Không gọi thẳng `LookupTable.Resolve`. README có mục "Tắt plugin / tắt model rồi mở lại".
 - [ ] Prefix theo main part của assembly.
 - [ ] Về hệ toàn cục trước khi tạo mặt phẳng; có kiểm tra vị trí sau khi dựng.
 - [ ] Đã thử ít nhất một trường hợp nghiêng và một trường hợp lệch ngang (nếu Part 2 có thể nghiêng).

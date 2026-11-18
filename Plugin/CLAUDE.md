@@ -3,6 +3,7 @@
 Áp dụng cho mọi component chuyển từ `.uel` (custom component Tekla 18.0) sang plugin C#, từ `RAKER+T_GIRDER` trở về sau.
 Người và Claude đều làm theo file này. Cách dùng lệnh xem [README.md](README.md).
 **Bản tóm tắt nguyên tắc và bài học rút ra từ RAKER+T_GIRDER: [NGUYEN_TAC_TU_RAKER.md](NGUYEN_TAC_TU_RAKER.md). Đọc trước khi làm component mới.**
+**Bổ sung từ COL_TO_GIRDER (18/11/2026): [NGUYEN_TAC_TU_COL_TO_GIRDER.md](NGUYEN_TAC_TU_COL_TO_GIRDER.md)** — hộp thoại 1 tab + tab Advanced, nhãn "(auto)", ô danh sách, bảng tra `<Ten>.txt` chuẩn, đo trên mặt tiếp xúc, scallop, lỗ ô van, phía đặt tấm theo model. Chỗ khác với RAKER thì theo file này.
 Trao đổi với người dùng bằng **tiếng Việt**.
 Người dùng mô tả yêu cầu theo [MAU_YEU_CAU.md](MAU_YEU_CAU.md): từ vựng hướng/trục, mẫu sửa, mẫu component mới, JSON hình dạng chuẩn.
 Khi có file JSON hình dạng chuẩn thì coi đó là chuẩn: dựng theo đúng file đó, chỗ nào khác bản gốc thì ghi vào mục "Giả định".
@@ -62,6 +63,7 @@ File `_Dev\Export\*.json` (nút "Xuat JSON component" của EXE) chứa đủ d�
   | text, material, profile | `string` |
 
 - **Giá trị mặc định** lấy từ một preset có thật trong file `.md`. Ghi tên preset đó ở đầu `Params.cs`. Giá trị nào không có trong preset thì đánh dấu là giả định.
+- Người dùng có thể đổi mặc định bằng nút "Ghi bang thong so vao Params.cs" của EXE (18/11/2026). Dòng đã đổi có ghi chú `EXE dd/MM/yyyy: P4 65 -> 55`. Gặp ghi chú này thì coi giá trị mới là ý người dùng, không trả về mặc định `.uel`, và đưa vào mục "Giả định" của README nếu chưa có. Để EXE ghi được, giữ phép gán mặc định dạng `Ten = <hằng>;` trong hàm khởi tạo, và ô "trống = tính" có `(trong` trong `DisplayName`.
 
 ### `Plugin.cs`
 - Phần `.inp` lấy từ `_hinh\dialog.inp`, do `VeHinh.cs` sinh ra (có hình minh hoạ, xem mục 4.2). Tên biến, kiểu, nhãn và tab giữ như `.inp` gốc. Khi chép vào: nhân đôi dấu `"`, và thay tên trong `joint(...)` hoặc `detail(...)` bằng `""" + PluginName + @"""`.
@@ -75,21 +77,32 @@ File `_Dev\Export\*.json` (nút "Xuat JSON component" của EXE) chứa đủ d�
 - Gán `PROFILE`, `MATERIAL`, `CLASS`, `SERIE` (prefix) cho part đúng như mục "Part attribute bindings". Prefix lấy theo main part (mục 4.3).
 - `CREATION` là điều kiện có tạo part hay không, phải làm đủ.
 - Nhánh nào chưa làm: ghi `Logger.Log("CANH BAO: ...")`, và ghi vào mục "Chưa làm" trong README.
+- Con số hình học **không phải biến `.uel`** (khoảng vượt khối cắt, khoảng dư, ngưỡng bỏ qua…) thì khai báo trong khối `// <KNOBS>` … `// </KNOBS>` ở đầu lớp, dạng `internal static double Ten = 3.0;  // [min..max, buoc] mo ta`, để chỉnh được bằng tab Knobs của EXE (xem `README.md` mục 3). Không dùng `const`/`readonly` cho các số này. Biến P/D của `.uel` không đưa vào KNOBS.
 - Mỗi đối tượng `Insert()` thành công thì thêm vào `created`, để EXE xoá được.
 - Đầu mỗi lần dựng, ghi thông số vào log bằng `Logger.Log("Thong so: " + _p)`.
 - Nếu đổi `TransformationPlane` thì phải trả lại plane cũ trong khối `finally`.
 
 ### Bảng tra `fVF(...)`
-- Đọc bảng tra từ thư mục model, sau đó từ `XS_FIRM`. File dùng **cp949**, phân cách **TAB**, xuống dòng **CRLF**. Chỉ đọc, không chép hay đổi file.
+- **BẮT BUỘC cho mọi bảng tra (cả bảng `fVF` của `.uel` gốc lẫn bảng tuỳ chọn), người dùng 18/11/2026: mặc định và ưu tiên dùng file txt trong thư mục model.** Dữ liệu bảng tra rất quan trọng, không được sơ sót hay nhầm file. Luôn tìm file qua `LookupTable.ResolveInModel`, không tự viết đường tìm khác:
+  - model có file cùng tên thì luôn dùng file đó;
+  - chưa có thì tìm file nguồn (`XS_PROJECT` → `XS_FIRM` → thư mục plugin), chép 1 bản vào model rồi dùng bản trong model;
+  - không ghi đè file trong model;
+  - log ghi đường dẫn đầy đủ của file đã dùng.
+  - README của component có mục "Tắt plugin / tắt model rồi mở lại" theo mẫu RAKER.
+- File dùng **cp949**, phân cách **TAB**, xuống dòng **CRLF**. Không sửa hay đổi encoding file nguồn (`File goc\`, `UEL\`, `XS_FIRM`); chỉ chép sang model.
 - Dùng hàm chung `_Common\Core\LookupTable.cs` (có từ 17/11/2026):
   - `Load` / `FindRow` để tra kiểu `fVF`;
   - `ApplyByKey` để gán cả dòng vào Params, theo tiêu đề cột là tên biến P.
   - Ví dụ: `RAKER+T_GIRDER\Component.cs`.
 - Hàm này đọc được cả cp949 lẫn UTF-8. Khoá được chuẩn hoá: không phân biệt hoa thường, bỏ dấu cách, `x` giữa 2 chữ số thành `*`.
-- **Bảng bắt buộc** (bảng của `.uel` gốc, gọi bằng `fVF`): không tìm thấy bảng hoặc dòng thì ghi log rõ tên file và khoá đang tìm, rồi dừng. Không tự điền số.
-- **Bảng tuỳ chọn theo profile Part 2** (người dùng thêm, như RAKER P56/P57): không có bảng hoặc dòng thì dùng giá trị hộp thoại và ghi `CANH BAO`. Cột có trong bảng thì **đè** giá trị hộp thoại. Muốn tắt bảng cho một liên kết thì đặt ô "Dung bang tra" = No.
+- **Không tra được thì không dựng** (người dùng 18/11/2026, áp cho MỌI component, cả bảng bắt buộc lẫn bảng tuỳ chọn đang bật):
+  - không tìm thấy file, không đọc được, không có dòng khoá (girder size / profile Part 2), thiếu ô bắt buộc, hoặc ô không đúng kiểu (vd. `M24` ở cột số);
+  - cỡ bu lông không có trong công thức tra của `.uel` (vd. P24/P26 của COL_TO_GIRDER chỉ có M16, M20, M22, M24, M27);
+  - → gọi `Logger.Error("...")` (ghi rõ tên file, khoá, cột) rồi `return false` **trước khi tạo bất kỳ đối tượng nào**. `Entry.Build` sẽ hiện **một hộp thông báo** liệt kê các lỗi (`_Common\Core\Logger.cs`). Không tự điền số, không lùi về giá trị hộp thoại.
+  - Ô **trống** ở cột tuỳ chọn vẫn là "dùng giá trị hộp thoại / tự tính" (vd. `e`, `L1`, `tip`, Gusset Length).
+- **Bảng tuỳ chọn theo profile Part 2** (người dùng thêm, như RAKER P56/P57): cột có trong bảng thì **đè** giá trị hộp thoại. Muốn tắt bảng cho một liên kết thì đặt ô "Dung bang tra" = No (khi đó không tra, không báo lỗi).
 - Bảng mẫu đặt tại `Plugin\<Ten>\<Ten>.txt`. `install.bat` chép bảng này vào thư mục plugin của Tekla nếu ở đó chưa có.
-- **Bảng tuỳ chọn lưu trong model** (người dùng 18/11/2026, `LookupTable.ResolveInModel`): model có file cùng tên thì luôn dùng bản trong model. Chưa có thì tìm file nguồn (đường dẫn đầy đủ, hoặc `XS_PROJECT` → `XS_FIRM` → thư mục plugin) rồi chép 1 bản vào model. Không ghi đè file trong model.
+- Bảng tuỳ chọn có ô chọn file: ô đó chọn file có đường dẫn đầy đủ thì file đó chỉ là **nguồn** cho lần chép đầu. Model đã có file cùng tên thì vẫn dùng bản trong model (theo quy tắc bắt buộc ở trên).
 - **Tên cột bảng tra dễ đọc** (người dùng 18/11/2026): mỗi biến trong `Params.cs` khai báo `[UelParam("P1", Table = "Base Plate Thk")]`, tên theo nhãn hộp thoại, không trùng nhau. File bảng mẫu dùng tên này làm tiêu đề và liệt kê đủ tên ở phần ghi chú đầu file. Tên biến P vẫn được nhận.
 - Ô chọn file bảng tra dùng kiểu `file_in` trong `.inp` (có nút "..."), ví dụ `parameter("", "P56", file_in, text, x, y, w)`.
 

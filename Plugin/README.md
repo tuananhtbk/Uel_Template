@@ -9,6 +9,10 @@
 | Component (thư mục = DLL = tên trong Tekla) | Từ file gốc | Ghi chú |
 |---|---|---|
 | `RAKER+T_GIRDER` | `UEL\RAKER+T_GIRDER.uel` (tên cũ trong catalog: `0-RAKER+TG`) | Xem [RAKER+T_GIRDER/README.md](RAKER+T_GIRDER/README.md) |
+| `COL_TO_GIRDER` | `File goc\COL TO GIRDER\COL_TO_GIRDER.uel` (tên trong catalog: `0-DM_S-Col2Gir`) | Chưa thử. Xem [COL_TO_GIRDER/README.md](COL_TO_GIRDER/README.md) |
+| `H-COL_TO_GIRDER` | `File goc\H-COL-GIRDER\H-COL.uel` (`0-DM_H-Col2Gir_H-COLUMN`) — clone COL_TO_GIRDER, Part 1 = cột H | Chưa thử. Xem [H-COL_TO_GIRDER/README.md](H-COL_TO_GIRDER/README.md) |
+| `COL_TO_HAUNCH_GIRDER` | `File goc\COL-HUN-PBOX\YGY-HAUNCH_Moment.uel` (`♥♥♥YGY_HAUNCH_Moment`) — clone COL_TO_GIRDER, Part 2 = dầm haunch | Chưa thử. Xem [COL_TO_HAUNCH_GIRDER/README.md](COL_TO_HAUNCH_GIRDER/README.md) |
+| `TEMPBEAM-MOMENT` | `File goc\PIN-MOMENT CHANGSIN\YGY_TEMPBEAM-MOMENT.uel` (`♥♥♥YGY_TempBeam-Moment`). Part 1 = dầm chính, Part 2 = dầm tạm; hình học lấy theo JSON của component gốc | Chưa thử. Xem [TEMPBEAM-MOMENT/README.md](TEMPBEAM-MOMENT/README.md) |
 
 ## 1. Cấu trúc thư mục
 
@@ -98,7 +102,36 @@ Mở lại Tekla. Component `RAKER+T_GIRDER_DEV` sẽ có trong Component catalo
        - EXE tự đặt `SESSIONNAME` cho đúng, nên nối được cả khi được mở từ nơi không có biến này, ví dụ terminal của ứng dụng khác.
      - Muốn ép một bản cụ thể thì chạy `UEL_TESTER.exe 2025`.
      - Sau khi build lại Core, chỉ cần bấm **"2. Dung lai"**.
+     - Nút **"Build Core + dung lai"** (18/11/2026): EXE chạy `build.bat core <Ten> <bộ>` cho component đang chọn, đúng bộ của Tekla đang nối. Kết quả csc hiện trong ô log. Build xong thì EXE nạp Core mới và dựng lại (nếu đã chọn cấu kiện). Build lỗi thì EXE vẫn dùng Core cũ.
      - Đối tượng EXE tạo ra là đối tượng rời. Dọn bằng nút **"Xoa ket qua vua dung"**.
+
+### Nút "Ghi bang thong so vao Params.cs" (18/11/2026)
+Ghi các giá trị đã đổi ở tab **"Bang thong so"** thành **giá trị mặc định** trong hàm khởi tạo của `Params.cs`, rồi build Core.
+- Chỉ ghi ô khác mặc định hiện tại. Ô nhập ở tab "Hop thoai" **không** được tính.
+- **Không** ghi ô "(trong = tinh / bang tra / theo ...)", ví dụ P22, P24, P28, P47, P50, P51, P12, P37, P54: trống ở đó nghĩa là tính theo công thức `.uel`, ghi số vào sẽ tắt công thức. Muốn cố định thì sửa tay.
+- Chỉ thay vế phải là hằng (số, `true`/`false`, `"chuoi"`). Cuối dòng thêm ghi chú `EXE dd/MM/yyyy: P4 65 -> 55` để còn biết giá trị gốc.
+- Trước khi ghi, EXE hiện danh sách thay đổi để bấm OK.
+- **Cẩn thận:** mọi liên kết trong model để **trống** các ô này sẽ đổi hình học ở lần Modify / dựng lại tiếp theo, kể cả model cũ. Đây là đổi mặc định so với `.uel` gốc, nên ghi vào README của component, mục "Giả định".
+- Bản DLL cài trong Tekla chỉ đổi khi build bản phát hành / `_DEV` và cài lại.
+
+### Tab "Knobs": chỉnh số hình học bằng thanh trượt (18/11/2026)
+Dùng cho các con số trong code **không phải biến của `.uel`**, ví dụ khoảng vượt của khối cắt, khoảng dư hay ngưỡng bỏ qua. Biến P/D của `.uel` vẫn để trong `Params.cs` và hộp thoại.
+
+1. Trong `.cs` của Core (`Builder.cs`…, không phải `Plugin*.cs`), khai báo các số này trong một khối có đánh dấu:
+   ```csharp
+   // <KNOBS>
+   internal static double BevelExtra = 3.0;   // [0..20, 0.5] Mo ta (mm)
+   internal static int    MaxRows    = 4;     // [1..10] Mo ta
+   // </KNOBS>
+   ```
+   - Mỗi dòng là một trường `static double` hoặc `static int` **thường** (không `const`, không `readonly`).
+   - Comment `[min..max]` hoặc `[min..max, bước]` sẽ cho thanh trượt. Không có thì chỉ có ô số.
+   - Ví dụ có sẵn: `COL_TO_GIRDER\Builder.cs`.
+2. Build Core một lần để Core có các trường đó, rồi mở tab **Knobs** trên EXE.
+3. Kéo thanh trượt hoặc gõ số. EXE gán giá trị vào Core đang nạp và dựng lại ngay, **không biên dịch**. Bỏ tick "Tu dung lai khi doi so" nếu muốn dựng bằng tay. Ô vàng là số khác với `.cs`; tên tab có dấu `*` khi còn thay đổi chưa ghi.
+4. Ưng thì bấm **"Ghi vao .cs + build Core"**. EXE chỉ thay đúng con số trên dòng đó, trong khối `<KNOBS>`, rồi build Core. Phần code còn lại không bị đụng.
+   - **"Bo thay doi"** lấy lại giá trị từ `.cs`.
+   - Giá trị chưa ghi chỉ có trong EXE. Plugin trong Tekla (Modify) và bản phát hành luôn dùng số ghi trong `.cs`.
 
 Log nằm ở `%TEMP%\UEL_PLUGINS.log`. Dòng đầu của mỗi lần chạy ghi `Core <thời điểm build>`, nhờ đó biết đang chạy bản code nào.
 

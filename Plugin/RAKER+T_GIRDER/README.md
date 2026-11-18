@@ -47,11 +47,12 @@ Nguồn: `_PHAN_TICH\components\RAKER+T_GIRDER.uel.md` (biến D, công thức, 
 
 ### Biến trong hộp thoại
 Đủ 34 biến của hộp thoại gốc, tên trùng khớp. EXE kiểm tra: không có ô vàng nào.
-Thêm 4 **biến mới** theo yêu cầu người dùng (17/11/2026), không có trong `.uel` gốc:
-- **P54:** chiều dài bản mã (tab Gusset & Bolt);
-- **P55:** profile FB (tab Flange & FB);
-- **P56:** file bảng tra (tab Base Plate);
-- **P57:** dùng bảng tra Yes/No (tab Base Plate).
+Thêm 5 **biến mới** theo yêu cầu người dùng, không có trong `.uel` gốc:
+- **P54:** chiều dài bản mã (tab Gusset & Bolt, 17/11/2026);
+- **P55:** profile FB (tab Flange & FB, 17/11/2026);
+- **P56:** file bảng tra (tab Base Plate, 17/11/2026);
+- **P57:** dùng bảng tra Yes/No (tab Base Plate, 17/11/2026);
+- **P58:** nguồn chiều dày bản đế "Thk. source", ô danh sách ngay dưới Mark (tab Base Plate, 18/11/2026). Xem mục dưới.
 - Biến tính toán của gốc: P14 (góc), P17 (dày cánh), P18, P25, P26, P33, P35, P42, P47–P50. Plugin tự tính các biến này từ hình học.
 - P27, P28, P30, P36, P37 có trong danh sách biến của gốc nhưng không có trong hộp thoại và không dùng trong công thức nào → bỏ qua.
 
@@ -61,6 +62,18 @@ Thêm 4 **biến mới** theo yêu cầu người dùng (17/11/2026), không có
   - Lỗi đã sửa (17/11/2026): bản đầu dựng FB trong mặt phẳng tạm tạo ra khi đang ở hệ cục bộ, nên FB nằm cách component hàng chục mét. Nay về hệ toàn cục trước rồi mới tạo mặt phẳng tạm, và kiểm tra lại vị trí FB sau khi dựng (lệch hơn 1 mm thì ghi CANH BAO).
   - Chiều xoay profile không đoán trước. Thanh được dựng xong thì đọc lại khối đặc; nếu đang dựng đứng thì xoay 90° (FRONT ↔ TOP).
   - Vật liệu mặc định là **SS275**, đúng mặc định của P5 trong `.uel`. Trước đây để trống thì lấy theo vật liệu bản đế.
+- **Chiều dày bản đế, P58 "Thk. source" (biến mới, 18/11/2026):** ô danh sách 3 lựa chọn, code ở `Component.ApplyThkSource`.
+
+  | Lựa chọn | Lưu | Chiều dày bản đế |
+  |---|---|---|
+  | `= Flange Part 1` | 0 | Dày cánh T-girder (`PROFILE.FLANGE_THICKNESS`). Bỏ qua ô P1 và cột `Base Plate Thk` của bảng tra (log có ghi). |
+  | `= Flange Part 2` | 1 | Dày cánh raker, tương tự. |
+  | `File text` (mặc định) | 2 | Cột `Base Plate Thk` của bảng tra, theo dòng profile raker. Dòng đó không có giá trị thì **dừng**, không dựng. P57 = No thì lấy ô P1 của hộp thoại. |
+
+  - Không đọc được dày cánh của profile thì **dừng** và ghi `LOI`.
+  - Component đặt trước khi có P58 coi như chọn `File text`, nên chạy như cũ. Riêng trường hợp bảng tra không có cột `Base Plate Thk` thì nay sẽ dừng.
+  - Profile cánh không đều (2 cánh dày khác nhau): Tekla trả về một giá trị `FLANGE_THICKNESS`, chưa kiểm tra lấy cánh nào.
+  - Bảng tra có thể có cột `Base Plate Thk Source` (0/1/2) để chọn theo profile.
 - **Bản mã, P54 (biến mới):** chiều dài cạnh dài bản mã, đo dọc trục raker. Để trống hoặc 0 thì tự tính như cũ, theo cột bu lông cuối + eH (P44). Khi nhập P54 thì P44 bị bỏ qua; log ghi eH thực tế và cảnh báo nếu bu lông quá sát mép.
 - **Vát mép hàn 2 cánh** *(17/11/2026)*: khối cắt dài thêm `2·dU·|u.Z|/|w.Z| + 100` mm, để vẫn cắt hết đường hàn khi raker lệch ngang góc nhọn.
 - **Bản mã:** hình bình hành, cạnh ngắn ngoài song song cạnh ngắn trong (tì bản đế). Không cắt; đẩy dọc trục raker cho chạm bản đế. Mặc định đặt phía trong.
@@ -81,10 +94,17 @@ Thêm 4 **biến mới** theo yêu cầu người dùng (17/11/2026), không có
 Bản đế, bản mã và bu lông thường đổi theo profile của raker, nên component có bảng tra để lấy các giá trị này.
 - **File:** ô P56 ở tab Base Plate, kiểu `file_in`, có nút **"..."** để chọn file (18/11/2026). Trong `UEL_TESTER.exe`, nút "..." mở sẵn thư mục model.
   - Để trống thì dùng `RAKER+T_GIRDER.txt`.
-- **Bảng tra lưu trong model** (người dùng yêu cầu 18/11/2026). Code ở `_Common\Core\LookupTable.cs`, hàm `ResolveInModel`.
-  1. Thư mục model đã có file **cùng tên** thì luôn dùng file trong model, kể cả khi P56 chọn một file ở chỗ khác. Log ghi rõ là đang dùng bản trong model.
-  2. Model chưa có thì tìm file nguồn: đường dẫn đầy đủ thì dùng đúng file đó; chỉ có tên thì tìm `XS_PROJECT` → `XS_FIRM` → thư mục plugin. Tìm thấy thì **chép 1 bản vào thư mục model** rồi dùng bản đó.
-  3. Không bao giờ ghi đè file đã có trong model. Muốn đổi bảng thì sửa file trong model, hoặc xoá file đó để lần sau chép lại từ file nguồn.
+- **QUY TẮC BẮT BUỘC: mặc định và ưu tiên dùng file txt trong thư mục model** (người dùng yêu cầu 18/11/2026). Dữ liệu bảng tra quyết định kích thước bản, bu lông, nên không được để xảy ra sơ sót hay nhầm file. Code ở `_Common\Core\LookupTable.cs`, hàm `ResolveInModel`. Mỗi lần chạy (Insert/Modify), plugin chọn file như sau:
+  1. Lấy **tên file** trong P56, bỏ phần thư mục; trống thì lấy `RAKER+T_GIRDER.txt`.
+  2. Thư mục model đã có file **cùng tên** thì **luôn dùng file trong model**, kể cả khi P56 chọn một file ở chỗ khác. Lúc đó log ghi rõ "dung ban trong model, KHONG dung <file ngoài>".
+  3. Model chưa có thì tìm file nguồn: đường dẫn đầy đủ thì dùng đúng file đó; chỉ có tên thì tìm `XS_PROJECT` → `XS_FIRM` → thư mục plugin. Tìm thấy thì **chép 1 bản vào thư mục model** rồi dùng bản trong model.
+  4. **Không bao giờ ghi đè** file đã có trong model.
+  5. Mỗi lần chạy, log ghi **đường dẫn đầy đủ** của file đã dùng, dòng khớp và các biến đã gán. Không chép được vào model (ví dụ thiếu quyền) thì log ghi `CANH BAO` và dùng tạm file nguồn.
+- **Tắt plugin, tắt model rồi mở lại thì sao:** ô P56 được lưu cùng component trong model. Bước 2 ở trên luôn tìm thấy bản đã chép, nên plugin vẫn dùng file trong model (ví dụ `F:\TUANANH\SAMPLE V2020\RAKER+T_GIRDER.txt`).
+  - Xoá hoặc di chuyển file txt bên ngoài: không ảnh hưởng.
+  - Sửa file txt bên ngoài: model **không** nhận thay đổi.
+  - Chép cả thư mục model sang máy khác: bảng tra đi theo model.
+- **Muốn đổi bảng tra của model:** sửa thẳng file trong thư mục model rồi bấm Modify, hoặc xoá file đó để lần chạy sau chép lại từ file nguồn. Sau khi sửa, kiểm tra log xem đã dùng đúng file và đúng dòng chưa.
 - **Mẫu:** [RAKER+T_GIRDER.txt](RAKER+T_GIRDER.txt). `install.bat` chép file này vào thư mục plugin nếu ở đó chưa có. Lần đầu chạy với P56 trống, file mẫu được chép vào model.
 - **Định dạng:**
   - phân cách TAB, dòng `#` là ghi chú;
@@ -95,7 +115,12 @@ Bản đế, bản mã và bu lông thường đổi theo profile của raker, n
   - dòng `*` là dòng mặc định;
   - lưu bằng cp949 hay UTF-8 đều được, nên lưu từ Excel dạng "Text (Tab delimited)" là dùng được.
 - **Ưu tiên:** cột có trong bảng **đè** giá trị hộp thoại, giống công thức `fVF` của `.uel`. P57 "Dung bang tra" = No thì chỉ dùng hộp thoại.
-- Profile không có trong bảng, và bảng cũng không có dòng `*`, thì dùng giá trị hộp thoại và ghi `CANH BAO` vào log.
+- **Không tra được thì không dựng** (người dùng 18/11/2026). Khi P57 = Yes, các trường hợp sau đều hiện hộp thông báo và component **không** được tạo:
+  - không tìm thấy hoặc không đọc được file bảng;
+  - profile raker không có trong bảng, và bảng cũng không có dòng `*`;
+  - một ô không đúng kiểu, ví dụ `M22` ở cột `Bolt Size`.
+
+  Trước đây các trường hợp này dùng giá trị hộp thoại và chỉ ghi `CANH BAO`. Muốn dựng bằng giá trị hộp thoại thì đặt P57 = No.
 - Component đọc lại bảng mỗi lần chạy, nên sửa file xong chỉ cần bấm Modify. Log ghi file đã dùng, dòng khớp và các biến đã gán.
 - Bảng mẫu mới có dòng `H350*357*19*19`, lấy từ preset KK350. Preset KK250 chưa rõ profile raker nên dòng đó đang để dạng ghi chú.
 

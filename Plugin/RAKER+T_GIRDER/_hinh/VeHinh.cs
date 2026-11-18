@@ -18,15 +18,16 @@ internal static class VeHinh
 {
     private const int SlotW = 64, SlotH = 22;
 
-    private static readonly Color Bg = Color.FromArgb(240, 240, 240);
-    private static readonly Color Green = Color.FromArgb(40, 190, 70);
-    private static readonly Color Blue = Color.FromArgb(40, 70, 205);
-    private static readonly Color Steel = Color.FromArgb(150, 150, 155);
-    private static readonly Color SteelDark = Color.FromArgb(105, 105, 110);
-    private static readonly Color Web = Color.FromArgb(185, 185, 190);
-    private static readonly Color Cyan = Color.FromArgb(0, 200, 220);
-    private static readonly Color Bolt = Color.FromArgb(205, 140, 30);
-    private static readonly Color Dim = Color.FromArgb(200, 30, 30);
+    private static readonly Color Bg = Color.FromArgb(243, 243, 243);        // màu kiểu Tekla (người dùng 18/11/2026)
+    private static readonly Color Green = Color.FromArgb(255, 204, 112);     // bản đế: cam vàng (tấm chính; tên biến giữ để ít sửa)
+    private static readonly Color Blue = Color.FromArgb(255, 204, 112);      // bản mã: cam vàng (tấm chính)
+    private static readonly Color Steel = Color.FromArgb(84, 128, 178);      // cánh dầm: xanh thép đậm
+    private static readonly Color SteelDark = Color.FromArgb(70, 110, 160);  // cánh Part 1: xanh thép đậm hơn
+    private static readonly Color Web = Color.FromArgb(108, 156, 206);        // bụng dầm: xanh thép
+    private static readonly Color Cyan = Color.FromArgb(245, 170, 80);        // FB: cam đậm (tấm phụ)
+    private static readonly Color Bolt = Color.White;                         // bu lông kiểu Tekla: tròn trắng + dấu cộng
+    private static readonly Pen EdgePen = new Pen(Color.FromArgb(28, 40, 70), 1f);   // viền xanh đậm kiểu Tekla
+    private static readonly Color Dim = Color.FromArgb(30, 30, 30);           // kích thước, mũi chỉ: đen
 
     private sealed class Field
     {
@@ -85,7 +86,7 @@ internal static class VeHinh
     private static void Rect(Color fill, int x, int y, int w, int h)
     {
         using (SolidBrush b = new SolidBrush(fill)) _g.FillRectangle(b, x, y, w, h);
-        _g.DrawRectangle(Pens.Black, x, y, w, h);
+        _g.DrawRectangle(EdgePen, x, y, w, h);
     }
 
     private static void Poly(Color fill, params int[] xy)
@@ -93,7 +94,7 @@ internal static class VeHinh
         Point[] pts = new Point[xy.Length / 2];
         for (int i = 0; i < pts.Length; i++) pts[i] = new Point(xy[2 * i], xy[2 * i + 1]);
         using (SolidBrush b = new SolidBrush(fill)) _g.FillPolygon(b, pts);
-        _g.DrawPolygon(Pens.Black, pts);
+        _g.DrawPolygon(EdgePen, pts);
     }
 
     private static void Text(string s, int x, int y, bool bold = false, Color? c = null)
@@ -110,9 +111,9 @@ internal static class VeHinh
     private static void BoltAt(int x, int y)
     {
         using (SolidBrush b = new SolidBrush(Bolt)) _g.FillEllipse(b, x - 8, y - 8, 16, 16);
-        _g.DrawEllipse(Pens.Black, x - 8, y - 8, 16, 16);
-        _g.DrawLine(Pens.Black, x - 4, y, x + 4, y);
-        _g.DrawLine(Pens.Black, x, y - 4, x, y + 4);
+        _g.DrawEllipse(EdgePen, x - 8, y - 8, 16, 16);
+        _g.DrawLine(EdgePen, x - 4, y, x + 4, y);
+        _g.DrawLine(EdgePen, x, y - 4, x, y + 4);
     }
 
     private static void Arrow(int x, int y, int dx, int dy, Pen pen)
@@ -221,6 +222,9 @@ internal static class VeHinh
         p.Extra.Add(Label("Mat.", x, y + 35)); p.Extra.Add(Param("P2", "material", "text", x + 120, y + 35, 120));
         p.Extra.Add(Label("Class", x, y + 70)); p.Extra.Add(Param("P3", "integer", "number", x + 120, y + 70, 120));
         p.Extra.Add(Label("Mark", x, y + 105)); p.Extra.Add(Param("P4", "string", "text", x + 120, y + 105, 120));
+        // P58 (biến mới 18/11/2026): nguồn chiều dày bản đế - 0 dày cánh Part 1, 1 dày cánh Part 2, 2 file text (mặc định)
+        p.Extra.Add(Label("Thk. source", x, y + 140));
+        Option(p, "P58", new[] { "= Flange Part 1", "= Flange Part 2", "File text" }, 2, x + 120, y + 140, 120);
         // Bảng tra theo profile Part 2 (biến mới 17/11/2026): cột có trong bảng đè giá trị hộp thoại
         p.Extra.Add(Label("Bang tra theo profile Part 2", x, y + 170));
         p.Extra.Add(Label("File (trong = RAKER+T_GIRDER.txt)", x, y + 200)); p.Extra.Add(Param("P56", "file_in", "text", x, y + 222, 300));   // file_in = ô có nút "..." chọn file (18/11/2026)
@@ -306,8 +310,8 @@ internal static class VeHinh
         // bụng + scallop
         Rect(Web, 132, 100, 460, 220);
         using (SolidBrush b = new SolidBrush(Bg)) { _g.FillPie(b, 112, 80, 40, 40, 0, 90); _g.FillPie(b, 112, 300, 40, 40, 270, 90); }
-        _g.DrawArc(Pens.Black, 112, 80, 40, 40, 0, 90);
-        _g.DrawArc(Pens.Black, 112, 300, 40, 40, 270, 90);
+        _g.DrawArc(EdgePen, 112, 80, 40, 40, 0, 90);
+        _g.DrawArc(EdgePen, 112, 300, 40, 40, 270, 90);
         // cánh trên: vát mở lên trên, mặt chân 2 mm ở dưới
         Poly(Steel, 130, 80, 590, 80, 590, 100, 104, 100, 104, 97);
         // cánh dưới: vát mở lên trên (mặt trong), chân ở mặt ngoài
@@ -354,6 +358,16 @@ internal static class VeHinh
     private static string Param(string name, string type, string fmt, int x, int y, int w)
     {
         return "            parameter(\"\", \"" + name + "\", " + type + ", " + fmt + ", " + x + ", " + y + ", " + w + ")";
+    }
+
+    /// Ô danh sách chọn của Tekla: attribute("P58", "", option, ...) { value("A", 1) value("B", 0) ... } - giá trị lưu = số thứ tự (0..).
+    private static void Option(Page p, string name, string[] options, int def, int x, int y, int w)
+    {
+        p.Extra.Add("            attribute(\"" + name + "\", \"\", option, \"%s\", none, none, \"0.0\", \"0.0\", " + x + ", " + y + ", " + w + ")");
+        p.Extra.Add("            {");
+        for (int i = 0; i < options.Length; i++)
+            p.Extra.Add("                value(\"" + options[i] + "\", " + (i == def ? 1 : 0) + ")");
+        p.Extra.Add("            }");
     }
 
     private static string Inp(List<Page> pages)

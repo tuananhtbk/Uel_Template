@@ -15,6 +15,7 @@ namespace UEL.Core.Components.RakerTG
             // Mark (P4/P21/P11) chỉ là PHẦN ĐUÔI: prefix = phần trước chữ "M" của prefix Part 1 + Mark (Plugin\CLAUDE.md 4.3).
             // KK350 lưu "B1D-RSF"/"B1D-RGP"/"B1D-RFB", #KRAC lưu "1RSF"/"1RGP"/"1RFB" -> phần đuôi chung là RSF/RGP/RFB.
             TopGap = 25; LeftGap = 25; BottGap = 25; RightGap = 25;
+            BasePlateThkSource = 2;                                                                     // P58 mới (18/11/2026): 2 = file text
 
             ConnType = 0;
             GussetThk = 30; GussetMat = "SM355"; GussetMark = "RGP"; GussetClass = 4;               // class: giả định
@@ -35,6 +36,10 @@ namespace UEL.Core.Components.RakerTG
 
         // ---------------- Base Plate
         [UelParam("P1", Table = "Base Plate Thk"), Category("1. Base Plate"), DisplayName("P1  Base Plate Thk.")] public double BasePlateThk { get; set; }
+        /// BIẾN MỚI, không có trong .uel gốc (người dùng 18/11/2026). Nguồn chiều dày bản đế:
+        ///   0 = bằng dày cánh Part 1 (T-girder), 1 = bằng dày cánh Part 2 (raker),
+        ///   2 = giá trị cột "Base Plate Thk" trong file text (mặc định; P57 = No thì lấy ô P1 của hộp thoại).
+        [UelParam("P58", Table = "Base Plate Thk Source"), Category("1. Base Plate"), DisplayName("P58 Thk source (0 flange P1, 1 flange P2, 2 file text)")] public int BasePlateThkSource { get; set; }
         [UelParam("P2", Table = "Base Plate Mat"), Category("1. Base Plate"), DisplayName("P2  Mat.")] public string BasePlateMat { get; set; }
         [UelParam("P3", Table = "Base Plate Class"), Category("1. Base Plate"), DisplayName("P3  Class")] public int BasePlateClass { get; set; }
         [UelParam("P4", Table = "Base Plate Mark"), Category("1. Base Plate"), DisplayName("P4  Mark")] public string BasePlateMark { get; set; }
